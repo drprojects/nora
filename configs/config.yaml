@@ -1,0 +1,10 @@
+# @package _global_
+
+# specify here default configuration
+# order of defaults determines the order in which configs override each other
+defaults:
+  - _self_
+  - arxiv: default.yaml
+  - notion: default.yaml
+  - proxy: default.yaml
+  - zotero: default.yaml
