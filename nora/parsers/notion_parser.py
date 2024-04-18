@@ -150,7 +150,7 @@ class NotionLibrary:
         return self._create_page(self.cfg.people_db_id, data)
 
     def create_paper(
-            self, name, authors=[], topics=[], to_read=True, abstract=None, 
+            self, name, authors=[], topics=[], to_read=True, abstract=None,
             url=None, year=None, venue=None):
 
         # Skip if paper already exists in the database
@@ -193,6 +193,8 @@ class NotionLibrary:
 
         # Abstract
         if abstract is not None:
+            # Remove any line breaks
+            abstract = ' '.join(abstract.split('\n')).replace('- ', '')
             data[self.cfg.paper_keys['abstract']] = {
                 'rich_text': [
                     {'text': {'content': abstract[:self.cfg.max_text_length]}}]}
