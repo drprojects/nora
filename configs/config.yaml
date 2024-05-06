@@ -6,6 +6,7 @@ defaults:
   - _self_
   - arxiv: default.yaml
   - elsevier: default.yaml
+  - hal: default.yaml
   - notion: default.yaml
   - proxy: default.yaml
   - zotero: default.yaml
