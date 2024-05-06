@@ -20,8 +20,7 @@ reference management softwares such as Zotero and Mendeley.
 
 It is composed of the **NoRA Notion template** for you to build on top of, as 
 well as **NoRA-Tools** to programmatically:
-- 🔥 upload an arxiv paper to your NoRA library from its ID, URL, or title
-- 🔥 upload an Elsevier paper from Scopus to your NoRA library from its ID, URL, or DOI
+- 🔥 programmatically upload papers to your NORA library from arxiv, Elsevier Scopus, or HAL
 - 🔥 move all your Zotero library to your NoRA library
 
 ### 🧪  NoRA template
@@ -46,6 +45,7 @@ NoRA template. For now, the main functionalities are:
 
 - uploading an arxiv paper (and associated metadata) to NoRA
 - uploading an Elsevier paper from Scopus (and associated metadata) to NoRA
+- uploading a HAL paper (and associated metadata) to NoRA
 - uploading your whole Zotero library to NoRA 
 
 You can freely modify or extend the NoRA template. However, keep in mind that if 
@@ -226,6 +226,26 @@ From its DOI:
 
 ```bash
 python nora/elsevier_to_nora.py elsevier.doi=10.1016/B978-1-84334-528-2.50006-0
+```
+
+### Uploading a HAL paper to NoRA
+
+From its HAL ID:
+
+```bash
+python nora/hal_to_nora.py hal.id=hal-03824190v1
+```
+
+From its url:
+
+```bash
+python nora/hal_to_nora.py hal.id=https://hal.science/hal-03824190v1
+```
+
+From its title:
+
+```bash
+python nora/hal_to_nora.py hal.title="Learning Multi-View Aggregation In the Wild for Large-Scale 3D Semantic Segmentation"
 ```
 
 

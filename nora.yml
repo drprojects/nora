@@ -54,4 +54,5 @@ dependencies:
     - typing-extensions==4.5.0
     - urllib3==1.26.15
     - webencodings==0.5.1
+    - xmltodict==0.13.0
 prefix: /Users/wl5719/opt/anaconda3/envs/nora
