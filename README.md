@@ -20,7 +20,8 @@ reference management softwares such as Zotero and Mendeley.
 
 It is composed of the **NoRA Notion template** for you to build on top of, as 
 well as **NoRA-Tools** to programmatically:
-- 🔥 upload an arxiv paper to your NoRA library from its ID, URL or title
+- 🔥 upload an arxiv paper to your NoRA library from its ID, URL, or title
+- 🔥 upload an Elsevier paper from Scopus to your NoRA library from its ID, URL, or DOI
 - 🔥 move all your Zotero library to your NoRA library
 
 ### 🧪  NoRA template
@@ -41,9 +42,11 @@ get familiar with it is probably to play with it 😉 !
 ### 🛠  NoRA-Tools
 
 The NoRA-Tools provide functionalities to programmatically upload data to your 
-NoRA template. For now, the two main functionalities are uploading your whole 
-Zotero library to NoRA and uploading an arxiv paper (and associated metadata) 
-to NoRA.
+NoRA template. For now, the main functionalities are:
+
+- uploading an arxiv paper (and associated metadata) to NoRA
+- uploading an Elsevier paper from Scopus (and associated metadata) to NoRA
+- uploading your whole Zotero library to NoRA 
 
 You can freely modify or extend the NoRA template. However, keep in mind that if 
 you want to use NoRA-Tools after modifying some sensitive page fields, you will 
@@ -131,12 +134,12 @@ venue_keys:
 <summary><b>
 ⚠️ Want to add your own 🤹 Conferences & journals ?️</b></summary>
 
-By default, when parsing an arxiv paper, NoRA-Tools will try to figure out 
-which `🤹 Conferences & journals` to place it under. However, one can hardly 
-account for all possible conference and journal names, nor for all the slight 
-formatting differences used to describe how a paper was published. Yet, we 
-attempt to group the most frequent ones using a predefined `VENUES` dictionary 
-in `nora/utils/venues.py`.
+By default, when parsing a paper from a remote database, NoRA-Tools will try to 
+figure out which `🤹 Conferences & journals` to place it under. However, one 
+can hardly account for all possible conference and journal names, nor for all 
+the slight formatting differences used to describe how a paper was published. 
+Yet, we attempt to group the most frequent ones using a predefined `VENUES` 
+dictionary in `nora/utils/venues.py`.
 
 If many papers from your library are from a conference or journal absent from 
 this dictionary, and you would like them to be grouped under the same 
@@ -144,7 +147,7 @@ this dictionary, and you would like them to be grouped under the same
 `VENUES`, using the following format:
 
 ````python
-'lowercase_match_to_search_for_in_arxiv_metadata': 'shorthand_under_which_to_group'
+'lowercase_match_to_search_for_in_remote_metadata': 'shorthand_under_which_to_group'
 ````
 
 </details>
@@ -190,13 +193,13 @@ https_proxy: 'your_https_proxy'
 From its arxiv ID:
 
 ```bash
-python nora/arxiv_to_nora.py arxiv.id="'2204.07548'"
+python nora/arxiv_to_nora.py arxiv.id=2204.07548
 ```
 
 From its url:
 
 ```bash
-python nora/arxiv_to_nora.py arxiv.id="https://arxiv.org/abs/2204.07548"
+python nora/arxiv_to_nora.py arxiv.id=https://arxiv.org/abs/2204.07548
 ```
 
 From its title:
@@ -204,6 +207,27 @@ From its title:
 ```bash
 python nora/arxiv_to_nora.py arxiv.title="Learning Multi-View Aggregation In the Wild for Large-Scale 3D Semantic Segmentation"
 ```
+
+### Uploading an Elsevier paper from Scopus to NoRA
+
+From its PII ID:
+
+```bash
+python nora/elsevier_to_nora.py elsevier.id=B9781843345282500060
+```
+
+From its url:
+
+```bash
+python nora/elsevier_to_nora.py elsevier.id=https://www.sciencedirect.com/science/article/pii/B9781843345282500060
+```
+
+From its DOI:
+
+```bash
+python nora/elsevier_to_nora.py elsevier.doi=10.1016/B978-1-84334-528-2.50006-0
+```
+
 
 ### Uploading your entire Zotero library to NoRA
 

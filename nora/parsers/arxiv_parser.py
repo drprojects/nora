@@ -31,6 +31,7 @@ class ArxivItem:
             "Please provide an arxiv identifier or a paper title"
 
         if arxiv_id is not None:
+            arxiv_id = str(arxiv_id)
             if 'arxiv.org' in arxiv_id:
                 arxiv_id = arxiv_id.split('/')[-1].replace('.pdf', '')
             self.id = arxiv_id

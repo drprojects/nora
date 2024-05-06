@@ -51,9 +51,9 @@ class NotionLibrary:
         payload = {"page_size": num}
         if name_equals:
             payload['filter'] = {
-            "property": "Name",
-            "rich_text": {
-                "equals": name_equals}}
+                "property": "Name",
+                "rich_text": {
+                    "equals": name_equals}}
         elif name_contains:
             payload['filter'] = {
                 "property": "Name",
