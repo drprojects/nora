@@ -74,8 +74,8 @@ class HALItem:
     def venue(self):
         # Search if conferenceTitle_s, journalTitle_s, or bookTitle_s
         # have been populated
-        for key in ['conferenceTitle_s', 'journalTitle_s', 'bookTitle_s']:
-            v = self._parse_results('str', key)
+        for k in ['conferenceTitle_s', 'journalTitle_s', 'bookTitle_s']:
+            v = self._parse_results('str', k)
             if v is None:
                 continue
             for key, venue in VENUES.items():

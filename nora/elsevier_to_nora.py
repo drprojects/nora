@@ -17,23 +17,30 @@ from nora.parsers.elsevier_parser import ElsevierItem
 
 @hydra.main(version_base="1.2", config_path=root + "/configs", config_name="config.yaml")
 def main(cfg):
-    # Setup the proxy
+    # Set up the proxy
     setup_proxy(cfg.proxy)
 
-    # Setup th ElsevierClient
-    client = ElsClient(cfg.elsevier.api_key, local_dir=tempfile.TemporaryDirectory().name)
+    def cleanup():
+        # Dirty hack to remove the pesky folders created by elsapy
+        for dirname in ['data', 'logs']:
+            path = os.path.join(root, dirname)
+            if os.path.exists(path) and os.path.isdir(path):
+                shutil.rmtree(path)
 
-    # Recover the paper data from the Elsevier API
-    eitem = ElsevierItem(client, id=cfg.elsevier.id, doi=cfg.elsevier.doi)
+    try:
+        # Set up th ElsevierClient
+        client = ElsClient(cfg.elsevier.api_key, local_dir=tempfile.TemporaryDirectory().name)
 
-    # Upload the paper to NoRA
-    eitem.to_notion(cfg.notion)
+        # Recover the paper data from the Elsevier API
+        eitem = ElsevierItem(client, id=cfg.elsevier.id, doi=cfg.elsevier.doi)
 
-    # Dirty hack to remove the pesky folders created by elsapy
-    for dirname in ['data', 'logs', 'outputs']:
-        path = os.path.join(root, dirname)
-        if os.path.exists(path) and os.path.isdir(path):
-            shutil.rmtree(path)
+        # Upload the paper to NoRA
+        eitem.to_notion(cfg.notion)
+
+        cleanup()
+
+    except:
+        cleanup()
 
 
 if __name__ == "__main__":

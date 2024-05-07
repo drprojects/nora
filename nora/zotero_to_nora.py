@@ -13,7 +13,7 @@ from nora.parsers.zotero_parser import ZoteroLibrary
 
 @hydra.main(version_base="1.2", config_path=root + "/configs", config_name="config.yaml")
 def main(cfg):
-    # Setup the proxy
+    # Set up the proxy
     setup_proxy(cfg.proxy)
 
     # Load all your Zotero library, may take a fex seconds...

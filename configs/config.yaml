@@ -9,4 +9,5 @@ defaults:
   - hal: default.yaml
   - notion: default.yaml
   - proxy: default.yaml
+  - springer: default.yaml
   - zotero: default.yaml

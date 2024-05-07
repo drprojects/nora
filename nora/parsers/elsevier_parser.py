@@ -59,7 +59,6 @@ class ElsevierItem:
     def venue(self):
         journal = self._abs_doc.data['coredata']['prism:publicationName']
 
-        # Search venue in 'journal_ref'
         if journal is not None:
             for key, venue in VENUES.items():
                 if key in journal.lower():
