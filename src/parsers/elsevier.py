@@ -1,7 +1,8 @@
-import elsapy
+import tempfile
+from elsapy.elsclient import ElsClient
 from elsapy.elsdoc import FullDoc, AbsDoc
-from nora.utils.venues import VENUES
-from nora.parsers.notion_parser import NotionLibrary
+from src.utils.venues import VENUES
+from src.parsers.notion import NotionLibrary
 
 
 __all__ = ['ElsevierItem']
@@ -12,11 +13,11 @@ __all__ = ['ElsevierItem']
 
 class ElsevierItem:
 
-    def __init__(self, client, id=None, doi=None):
+    def __init__(self, api_key, id=None, doi=None):
         """Object to query a paper from Elsevier.
 
-        :param client: ElsClient
-            elsapy ElsClient object, initialized with an API token.
+        :param api_key: string
+            API key to query Elsevier Scopus database
         :param id: str
             Elsevier PII identifier, or url, from which the
             identifier will be parsed
@@ -25,6 +26,8 @@ class ElsevierItem:
         """
         assert id is not None or doi is not None, \
             "Please provide an Elsevier identifier, or DOI"
+
+        client = ElsClient(api_key, local_dir=tempfile.TemporaryDirectory().name)
 
         if id is not None:
             if "sciencedirect.com" in id:
@@ -40,6 +43,7 @@ class ElsevierItem:
         self._abs_doc = AbsDoc(
             scp_id=self._full_doc.data['link']['@href'].split('/')[-1])
         self._abs_doc.read(client)
+        print(self.title)
 
     @property
     def title(self):
@@ -59,7 +63,6 @@ class ElsevierItem:
     def venue(self):
         journal = self._abs_doc.data['coredata']['prism:publicationName']
 
-        # Search venue in 'journal_ref'
         if journal is not None:
             for key, venue in VENUES.items():
                 if key in journal.lower():
