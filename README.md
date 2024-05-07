@@ -20,7 +20,7 @@ reference management softwares such as Zotero and Mendeley.
 
 It is composed of the **NoRA Notion template** for you to build on top of, as 
 well as **NoRA-Tools** to programmatically:
-- 🔥 programmatically upload papers to your NORA library from arxiv, Elsevier Scopus, or HAL
+- 🔥 programmatically upload papers to your NORA library from **arxiv**, **Elsevier Scopus**, **Springer**, or **HAL**
 - 🔥 move all your Zotero library to your NoRA library
 
 ### 🧪  NoRA template
@@ -45,6 +45,7 @@ NoRA template. For now, the main functionalities are:
 
 - uploading an arxiv paper (and associated metadata) to NoRA
 - uploading an Elsevier paper from Scopus (and associated metadata) to NoRA
+- uploading a Springer paper (and associated metadata) to NoRA
 - uploading a HAL paper (and associated metadata) to NoRA
 - uploading your whole Zotero library to NoRA 
 
@@ -152,6 +153,32 @@ this dictionary, and you would like them to be grouped under the same
 
 </details>
 
+### Elsevier configuration (optional)
+
+If you intend to upload papers from Elsevier to Notion, you will need to configure your NoRA-Tools accordingly.
+To this end, you will need to [create an Elsevier **API key**](https://dev.elsevier.com).
+
+You can then save your Elsevier **API key** in the `configs/elsevier/default.yaml` file:
+
+````yaml
+# Adapt to your own Elsevier account.
+# See https://dev.elsevier.com
+api_token: 'your_api_key'
+````
+
+### Springer configuration (optional)
+
+If you intend to upload papers from Springer to Notion, you will need to configure your NoRA-Tools accordingly.
+To this end, you will need to [create an Springer **API key**](https://docs-dev.springernature.com/docs).
+
+You can then save your Springer **API key** in the `configs/springer/default.yaml` file:
+
+````yaml
+# Adapt to your own Springer account.
+# See https://docs-dev.springernature.com/docs
+api_key: 'your_api_key'
+````
+
 ### Zotero configuration (optional)
 
 If you intend to move your whole Zotero library to Notion, you will need to configure your NoRA-Tools accordingly.
@@ -196,7 +223,7 @@ From its arxiv ID:
 python nora/arxiv_to_nora.py arxiv.id=2204.07548
 ```
 
-From its url:
+From its URL:
 
 ```bash
 python nora/arxiv_to_nora.py arxiv.id=https://arxiv.org/abs/2204.07548
@@ -216,7 +243,7 @@ From its PII ID:
 python nora/elsevier_to_nora.py elsevier.id=B9781843345282500060
 ```
 
-From its url:
+From its URL:
 
 ```bash
 python nora/elsevier_to_nora.py elsevier.id=https://www.sciencedirect.com/science/article/pii/B9781843345282500060
@@ -228,6 +255,20 @@ From its DOI:
 python nora/elsevier_to_nora.py elsevier.doi=10.1016/B978-1-84334-528-2.50006-0
 ```
 
+### Uploading an Springer paper from Scopus to NoRA
+
+From its DOI:
+
+```bash
+python nora/springer_to_nora.py springer.doi=10.1038/d41586-019-02841-9
+```
+
+From its URL:
+
+```bash
+python nora/springer_to_nora.py springer.url=https://www.nature.com/articles/d41586-019-02841-9
+```
+
 ### Uploading a HAL paper to NoRA
 
 From its HAL ID:
@@ -236,7 +277,7 @@ From its HAL ID:
 python nora/hal_to_nora.py hal.id=hal-03824190v1
 ```
 
-From its url:
+From its URL:
 
 ```bash
 python nora/hal_to_nora.py hal.id=https://hal.science/hal-03824190v1
@@ -247,7 +288,6 @@ From its title:
 ```bash
 python nora/hal_to_nora.py hal.title="Learning Multi-View Aggregation In the Wild for Large-Scale 3D Semantic Segmentation"
 ```
-
 
 ### Uploading your entire Zotero library to NoRA
 
