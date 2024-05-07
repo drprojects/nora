@@ -10,3 +10,6 @@ venue_keys_per_type:
     conferencePaper: ['proceedingsTitle', 'conferenceName']
     journalArticle: ['publicationTitle', 'journalAbbreviation']
     report: []
+
+# Switch to trigger the upload
+upload: False

@@ -140,7 +140,7 @@ figure out which `🤹 Conferences & journals` to place it under. However, one
 can hardly account for all possible conference and journal names, nor for all 
 the slight formatting differences used to describe how a paper was published. 
 Yet, we attempt to group the most frequent ones using a predefined `VENUES` 
-dictionary in `nora/utils/venues.py`.
+dictionary in `src/utils/venues.py`.
 
 If many papers from your library are from a conference or journal absent from 
 this dictionary, and you would like them to be grouped under the same 
@@ -155,10 +155,12 @@ this dictionary, and you would like them to be grouped under the same
 
 ### Elsevier configuration (optional)
 
-If you intend to upload papers from Elsevier to Notion, you will need to configure your NoRA-Tools accordingly.
+If you intend to upload papers from Elsevier to Notion, you will need to configure your
+NoRA-Tools accordingly.
 To this end, you will need to [create an Elsevier **API key**](https://dev.elsevier.com).
 
-You can then save your Elsevier **API key** in the `configs/elsevier/default.yaml` file:
+You can then save your Elsevier **API key** in the `configs/elsevier/default.yaml` 
+file:
 
 ````yaml
 # Adapt to your own Elsevier account.
@@ -168,10 +170,12 @@ api_token: 'your_api_key'
 
 ### Springer configuration (optional)
 
-If you intend to upload papers from Springer to Notion, you will need to configure your NoRA-Tools accordingly.
-To this end, you will need to [create an Springer **API key**](https://docs-dev.springernature.com/docs).
+If you intend to upload papers from Springer to Notion, you will need to configure your 
+NoRA-Tools accordingly.
+To this end, you will need to [create a Springer **API key**](https://docs-dev.springernature.com/docs).
 
-You can then save your Springer **API key** in the `configs/springer/default.yaml` file:
+You can then save your Springer **API key** in the `configs/springer/default.yaml` 
+file:
 
 ````yaml
 # Adapt to your own Springer account.
@@ -181,12 +185,14 @@ api_key: 'your_api_key'
 
 ### Zotero configuration (optional)
 
-If you intend to move your whole Zotero library to Notion, you will need to configure your NoRA-Tools accordingly.
+If you intend to move your whole Zotero library to Notion, you will need to configure 
+your NoRA-Tools accordingly.
 To this end, you will need to:
 - Get your Zotero **library ID** by checking the UserID in your [profile settings](https://www.zotero.org/settings/keys)
 - Create a Zotero **API key** in your [profile settings](https://www.zotero.org/settings/keys)
 
-You can then save your Zotero **library ID** and **API key** in the `configs/zotero/default.yaml` file:
+You can then save your Zotero **library ID** and **API key** in the 
+`configs/zotero/default.yaml` file:
 
 ````yaml
 # Adapt to your own Zotero library
@@ -194,8 +200,10 @@ library_id: 'your_library_id'
 api_token: 'your_api_key'
 ````
 
-By default, the `collections` (eg folders) in your Zotero library will be used to populate the `Key Topics` field of your papers in NoRA.
-If you want to exclude some of your collections from this behavior, your can list them in:
+By default, the `collections` (eg folders) in your Zotero library will be used to 
+populate the `Key Topics` field of your papers in NoRA.
+If you want to exclude some of your collections from this behavior, your can list 
+them in:
 
 ````yaml
 ignored_collections: ['collection name 1', 'collection name 2']
@@ -204,7 +212,8 @@ ignored_collections: ['collection name 1', 'collection name 2']
 ### Proxy configuration (optional)
 
 If your machine has a proxy, you will need to configure your NoRA-Tools to use it.
-To this end, specify your `$HTTP_PROXY` and `$HTTPS_PROXY` in the `configs/proxy/default.yaml` file:
+To this end, specify your `$HTTP_PROXY` and `$HTTPS_PROXY` in the 
+`configs/proxy/default.yaml` file:
 
 ````yaml
 http_proxy: 'your_http_proxy'
@@ -220,19 +229,19 @@ https_proxy: 'your_https_proxy'
 From its arxiv ID:
 
 ```bash
-python nora/arxiv_to_nora.py arxiv.id=2204.07548
+python nora.py arxiv.id=2204.07548
 ```
 
 From its URL:
 
 ```bash
-python nora/arxiv_to_nora.py arxiv.id=https://arxiv.org/abs/2204.07548
+python nora.py arxiv.id=https://arxiv.org/abs/2204.07548
 ```
 
 From its title:
 
 ```bash
-python nora/arxiv_to_nora.py arxiv.title="Learning Multi-View Aggregation In the Wild for Large-Scale 3D Semantic Segmentation"
+python nora.py arxiv.title="Learning Multi-View Aggregation In the Wild for Large-Scale 3D Semantic Segmentation"
 ```
 
 ### Uploading an Elsevier paper from Scopus to NoRA
@@ -240,33 +249,33 @@ python nora/arxiv_to_nora.py arxiv.title="Learning Multi-View Aggregation In the
 From its PII ID:
 
 ```bash
-python nora/elsevier_to_nora.py elsevier.id=B9781843345282500060
+python nora.py elsevier.id=S1569843222000656
 ```
 
 From its URL:
 
 ```bash
-python nora/elsevier_to_nora.py elsevier.id=https://www.sciencedirect.com/science/article/pii/B9781843345282500060
+python nora.py elsevier.id=https://www.sciencedirect.com/science/article/pii/S1569843222000656
 ```
 
 From its DOI:
 
 ```bash
-python nora/elsevier_to_nora.py elsevier.doi=10.1016/B978-1-84334-528-2.50006-0
+python nora.py elsevier.doi=10.1016/j.jag.2022.102863
 ```
 
-### Uploading an Springer paper from Scopus to NoRA
+### Uploading a Springer paper from Scopus to NoRA
 
 From its DOI:
 
 ```bash
-python nora/springer_to_nora.py springer.doi=10.1038/d41586-019-02841-9
+python nora.py springer.doi=10.1038/d41586-019-02841-9
 ```
 
 From its URL:
 
 ```bash
-python nora/springer_to_nora.py springer.url=https://www.nature.com/articles/d41586-019-02841-9
+python nora.py springer.url=https://www.nature.com/articles/d41586-019-02841-9
 ```
 
 ### Uploading a HAL paper to NoRA
@@ -274,25 +283,25 @@ python nora/springer_to_nora.py springer.url=https://www.nature.com/articles/d41
 From its HAL ID:
 
 ```bash
-python nora/hal_to_nora.py hal.id=hal-03824190v1
+python nora.py hal.id=hal-03824190v1
 ```
 
 From its URL:
 
 ```bash
-python nora/hal_to_nora.py hal.id=https://hal.science/hal-03824190v1
+python nora.py hal.id=https://hal.science/hal-03824190v1
 ```
 
 From its title:
 
 ```bash
-python nora/hal_to_nora.py hal.title="Learning Multi-View Aggregation In the Wild for Large-Scale 3D Semantic Segmentation"
+python nora.py hal.title="Learning Multi-View Aggregation In the Wild for Large-Scale 3D Semantic Segmentation"
 ```
 
 ### Uploading your entire Zotero library to NoRA
 
 ```bash
-python nora/zotero_to_nora.py
+python nora.py zotero.upload=True
 ```
 
 <br>
@@ -304,7 +313,7 @@ NoRA is licensed under the MIT License.
 ```
 MIT License
 
-Copyright (c) 2021 ashleve
+Copyright (c) 2023-2024 Damien Robert
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

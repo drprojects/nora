@@ -11,3 +11,5 @@ defaults:
   - proxy: default.yaml
   - springer: default.yaml
   - zotero: default.yaml
+
+verbose: True
