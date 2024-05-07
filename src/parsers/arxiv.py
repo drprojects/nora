@@ -1,6 +1,6 @@
 import arxiv
-from nora.utils.venues import VENUES
-from nora.parsers.notion_parser import NotionLibrary
+from src.utils.venues import VENUES
+from src.parsers.notion import NotionLibrary
 
 
 __all__ = ['ArxivItem']

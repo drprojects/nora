@@ -1,8 +1,8 @@
 import datetime
 from pyzotero import zotero
-from nora.utils.venues import VENUES
-from nora.parsers.arxiv_parser import ArxivItem
-from nora.parsers.notion_parser import NotionLibrary
+from src.utils.venues import VENUES
+from src.parsers.arxiv import ArxivItem
+from src.parsers.notion import NotionLibrary
 
 
 __all__ = ['ZoteroLibrary', 'ZoteroItem']
