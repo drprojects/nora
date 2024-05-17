@@ -51,12 +51,20 @@ class ElsevierItem:
 
     @property
     def authors(self):
+        if 'authors' not in self._abs_doc.data.keys():
+            print("Warning: Could not recover the list of authors, falling back to recovered paper 'creator'")
+            return [
+                f"{x['ce:given-name']} {x['ce:surname']}"
+                for x in self._abs_doc.data['coredata']['dc:creator']['author']]
         return [
             f"{x['ce:given-name']} {x['ce:surname']}"
             for x in self._abs_doc.data['authors']['author']]
 
     @property
     def abstract(self):
+        if 'dc:description' not in self._abs_doc.data['coredata'].keys():
+            print("Warning: Could not recover the paper abstract")
+            return ''
         return self._abs_doc.data['coredata']['dc:description']
 
     @property
