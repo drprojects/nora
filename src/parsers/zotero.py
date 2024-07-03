@@ -152,7 +152,8 @@ class ZoteroItem:
     def authors(self):
         return [
             (creator['firstName'], creator['lastName'])
-            for creator in self.item['data']['creators']]
+            for creator in self.item['data']['creators']
+            if 'firstName' in creator.keys() and 'lastName' in creator.keys()]
 
     @property
     def to_read(self):
