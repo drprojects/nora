@@ -77,19 +77,22 @@ conda env create -f nora.yml
 ### Notion configuration
 
 Next, you will need to configure your NoRA-Tools to connect to your NoRA databases in Notion.
-To this end, follow the official guide to [Create a Notion Integration](https://developers.notion.com/docs/create-a-notion-integration).
-Following all steps in this page you will:
-- Create an integration and get a **Token**
-- For each database in the NoRA template:
-  - Share the database with your integration
-  - Save the **database ID**
+To this end, do the following:
+- [Create an integration](https://developers.notion.com/docs/create-a-notion-integration) for your NoRA workspace
+- [Recover your **API secret token**](https://developers.notion.com/docs/create-a-notion-integration#get-your-api-secret)
+- For each database in the NoRA template (ie Papers, People, Affiliations, Venues, Topics):
+  - [Give your integration permission to access this database](https://developers.notion.com/docs/create-a-notion-integration#give-your-integration-page-permissions)
+  - Recover your **database ID**. For this, open the database page **in a browser**. The
+database ID is a 32-alphanumeric-character that can be recovered from the URL of the page:
+`https://www.notion.so/this_is_your_32_character_database_id?v=you_can_ignore_the_rest`
 
-You can then save the **Token** and the **database IDs** in the `configs/notion/default.yaml` file:
+Once you have recovered your **API secret token** and the **database IDs**, you must save 
+these in the `configs/notion/default.yaml` file:
 
 ````yaml
 # Adapt to your own Notion library.
 # See https://developers.notion.com/docs/create-a-notion-integration
-token: "your_integration_token"
+token: "your_api_secret_token"
 papers_db_id: "your_papers_database_id"
 people_db_id: "your_people_database_id"
 affiliations_db_id: "your_affiliations_database_id"
@@ -148,7 +151,7 @@ this dictionary, and you would like them to be grouped under the same
 `VENUES`, using the following format:
 
 ````python
-'lowercase_match_to_search_for_in_remote_metadata': 'shorthand_under_which_to_group'
+lowercase_match_to_search_for_in_remote_metadata: 'shorthand_under_which_to_group'
 ````
 
 </details>
