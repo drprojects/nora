@@ -1,4 +1,5 @@
 import arxiv
+import re
 from src.utils.venues import VENUES
 from src.parsers.notion import NotionLibrary
 
@@ -32,8 +33,32 @@ class ArxivItem:
 
         if arxiv_id is not None:
             arxiv_id = str(arxiv_id)
+
+            # Parse arxiv id from a url
             if 'arxiv.org' in arxiv_id:
-                arxiv_id = arxiv_id.split('/')[-1].replace('.pdf', '')
+                arxiv_id = arxiv_id.split('arxiv.org/')[-1].replace('.pdf', '')
+
+            # Check whether arxiv id format before March 2007
+            if not bool(re.search(r'[0-9]{4}\.[0-9]', arxiv_id)):
+                raise ValueError(
+                    f"The arxiv identifier '{arxiv_id}' does not follow the arxiv format "
+                    f"defined for articles published after March 2007. At the moment, only"
+                    f"articles following this pattern are supported. Please refer to:"
+                    f"https://info.arxiv.org/help/arxiv_identifier.html")
+
+            # Isolate the YYMM.NNNNN sequence
+            arxiv_id = arxiv_id.split('/')[-1]
+
+            # Sometimes trailing 0s are lost in the process. It is
+            # possible to cover these cases as long as the article
+            # came out after March 2007:
+            # https://info.arxiv.org/help/arxiv_identifier.html
+            yymm, numbervv = arxiv_id.split(':')[-1].split('.')
+            expected_number_size = 5 if int(yymm) >= 1501 else 4
+            if len(numbervv) < expected_number_size:
+                numbervv += '0' * (expected_number_size - len(numbervv))
+                arxiv_id = f"{yymm}.{numbervv}"
+
             self.id = arxiv_id
             results = list(CLIENT.results(arxiv.Search(id_list=[arxiv_id])))
             if len(results) == 0:
