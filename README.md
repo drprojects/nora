@@ -226,7 +226,7 @@ python nora.py url=https://arxiv.org/abs/2204.07548
 From an identifier (DOI, ISBN, PMID, arXiv ID):
 
 ```bash
-python nora.py id=2204.07548
+python nora.py "id='2204.07548'"
 ```
 
 ### Uploading your entire Zotero library to NoRA
