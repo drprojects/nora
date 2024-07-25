@@ -3,13 +3,5 @@ library_id: '6283565'
 api_token: 'hkgoJzOFBmlqfZjZJjoBbDIx'
 ignored_collections: ['_ CVPR 2022', '_ PENDING READS']
 
-# Leave untouched
-paper_types: ['bookSection', 'conferencePaper', 'journalArticle', 'report']
-venue_keys_per_type:
-    bookSection: ['bookTitle']
-    conferencePaper: ['proceedingsTitle', 'conferenceName']
-    journalArticle: ['publicationTitle', 'journalAbbreviation']
-    report: []
-
 # Switch to trigger the upload
 upload: False

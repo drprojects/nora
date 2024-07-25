@@ -8,11 +8,7 @@ root = str(pyrootutils.setup_root(
 
 import hydra
 from src.utils.proxy import setup_proxy
-from src.parsers.arxiv import ArxivItem
-from src.parsers.elsevier import ElsevierItem
-from src.parsers.springer import SpringerItem
-from src.parsers.hal import HALItem
-from src.parsers.zotero import ZoteroLibrary
+from src.parsers.zotero import ZoteroLibrary, ZoteroItem
 from src.utils.folders import cleanup
 
 
@@ -21,21 +17,13 @@ def main(cfg):
     # Set up the proxy
     setup_proxy(cfg.proxy)
 
-    # Load an arxiv paper
-    if cfg.arxiv.id or cfg.arxiv.title:
-        item = ArxivItem(arxiv_id=cfg.arxiv.id, title=cfg.arxiv.title)
+    # Load from id
+    if cfg.id:
+        item = ZoteroItem.from_identifier(cfg.id)
 
-    # Load an Elsevier paper
-    elif cfg.elsevier.id or cfg.elsevier.doi:
-        item = ElsevierItem(cfg.elsevier.api_key, id=cfg.elsevier.id, doi=cfg.elsevier.doi)
-
-    # Load a Springer paper
-    elif cfg.springer.doi or cfg.springer.url:
-        item = SpringerItem(cfg.springer.api_key, doi=cfg.springer.doi, url=cfg.springer.url)
-
-    # Load a HAL paper
-    elif cfg.hal.id or cfg.hal.title:
-        item = HALItem(hal_id=cfg.hal.id, title=cfg.hal.title)
+    # Load from url
+    elif cfg.url:
+        item = ZoteroItem.from_url(cfg.url)
 
     # Load an entire Zotero library, may take a few seconds...
     elif cfg.zotero.upload:

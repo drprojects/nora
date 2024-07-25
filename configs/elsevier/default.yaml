@@ -1,7 +1,0 @@
-# Adapt to your own Elsevier account.
-# See https://dev.elsevier.com
-api_key: "f68aeb1d028a1505a143621bbecc3d10"
-
-# Specify one of those when uploading an Elsevier paper to NoRA
-id: null
-doi: null
