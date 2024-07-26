@@ -78,14 +78,36 @@ cd nora
 # create a 'nora' conda environment with required dependencies
 conda env create -f nora.yml
 
-# activate your new conda environment
-conda activate nora
-
 # install the npm server
 cd src/translation_server
 npm install
 cd ../..
 ```
+
+
+<details>
+<summary><b>Setting up NoRA tools for simpler bash commands (optional, unix machines only)</b></summary>
+
+As you will see below, calling NoRA tools requires activating a conda 
+environment and calling a python script. For more convenience, it is also possible to 
+configure NoRA to be called using a simpler bash syntax. To this end, you need to do 
+two things.
+
+First, indicate the path to your conda installation directory in the [`nora`](nora) 
+bash script:
+```bash
+CONDA_DIR=/path/to/your/conda/installation/directory
+```
+
+Next, you will need to add the project `nora/` repository to the `$PATH$` environment 
+variable of your machine. This way, you will be able to call the [`nora`](nora) 
+script from anywhere ! To do this, you typically want to add something like this to your 
+`.bashrc`:
+```bash
+export PATH=/path/to/repository/nora${PATH:+:${PATH}}
+```
+
+</details>
 
 ### Notion configuration
 
@@ -220,14 +242,44 @@ has two mechanisms for uploading a paper.
 From a URL:
 
 ```bash
+# In your activated nora conda environment
 python nora.py url=https://arxiv.org/abs/2204.07548
 ```
+
+<details>
+<summary>If you set up NoRA for simpler unix commands</summary>
+
+```bash
+nora url=https://arxiv.org/abs/2204.07548
+```
+
+</details>
 
 From an identifier (DOI, ISBN, PMID, arXiv ID):
 
 ```bash
+# In your activated nora conda environment
 python nora.py "id='2204.07548'"
 ```
+
+<details>
+<summary>If you set up NoRA for simpler unix commands</summary>
+
+```bash
+nora "id='2204.07548'"
+```
+
+</details>
+
+> **Note**: we use [hydra](https://hydra.cc) for parsing shell commands and 
+> recommend using quotes as shown above when querying `id=...`. This is to
+> avoid some potential trailing zeros to be ignored when parsing your shell 
+> arguments. For more details on this, see the 
+> [hydra documentation](https://hydra.cc/docs/1.2/advanced/override_grammar/basic/#quoted-values) 
+
+> **Note**: NoRA uses `psutil.net_connections()` which requires sudo 
+> privileges on macOS. Unfortunately, there is no workaround this, you will
+> need to run `nora` as sudo on macOS.
 
 ### Uploading your entire Zotero library to NoRA
 

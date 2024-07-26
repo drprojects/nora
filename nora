@@ -1,0 +1,32 @@
+#!/bin/bash
+
+: '
+This script is made to facilitate using NoRA tools by simply
+calling from anywhere on your machine:
+  ```bash
+  nora ...
+  ```
+without the need to activate the conda environment and navigate
+to the project folder.
+Still, to make this work on any platform, you may need to make
+some minor adjustments:
+  - `$CONDA_DIR`: the path to your conda installation directory
+  - add the nora/ directory to your `$PATH`
+'
+
+# conda installation directory - adjust this to your machine
+#CONDA_DIR=`realpath ~/miniconda3`
+CONDA_DIR=`realpath /opt/miniconda3`
+
+# Recover the NoRA project's directory from the position of 
+# the nora script and move there
+HERE=`dirname $0`
+HERE=`realpath $HERE`
+cd $HERE
+
+# Activate the nora conda environment
+source ${CONDA_DIR}/etc/profile.d/conda.sh
+conda activate nora
+
+# Run the command
+python nora.py $@
