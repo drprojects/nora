@@ -6,8 +6,8 @@
 [![hydra](https://img.shields.io/badge/Config-Hydra_1.2-89b8cd)](https://hydra.cc/)
 [![license](https://img.shields.io/badge/License-MIT-green.svg?labelColor=gray)](https://github.com/ashleve/lightning-hydra-template#license)
 
-A Notion template to help you keep track of the papers you read, their authors, 
-your notes and more 🚀⚡🔥
+A Notion template to help you keep track of the papers you read 📜, their authors 👤, 
+your notes 📝, and more 🔥
 
 </div>
 
@@ -20,9 +20,9 @@ reference management softwares such as Zotero and Mendeley.
 
 It is composed of the **NoRA Notion template** for you to build on top of, as 
 well as **NoRA-Tools** to programmatically:
-- 🔥 programmatically upload papers to your NORA library just like with 
+- 🔥 upload papers to your NORA library as easily as with 
 [Zotero Connector](https://www.zotero.org/download/connectors)
-- 🔥 move all your Zotero library to your NoRA library
+- 🔥 move all your already-existing Zotero library to NoRA
 
 ### 🧪  NoRA template
 
@@ -42,15 +42,15 @@ get familiar with it is probably to play with it 😉 !
 ### 🛠  NoRA-Tools
 
 The NoRA-Tools provide functionalities to programmatically upload data to your 
-NoRA template. For now, the main functionalities are:
+NoRA template. The main functionalities are:
 
-- uploading a paper and associated metadata to NoRA from its URL or 
-from an identifier (DOI, ISBN, PMID, arXiv ID), just like with 
+- uploading a paper and associated metadata to NoRA from a URL or 
+from an identifier (DOI, ISBN, PMID, arXiv ID), exactly like with 
 [Zotero Connector](https://www.zotero.org/download/connectors)
 - uploading your whole Zotero library to NoRA 
 
 You can freely modify or extend the NoRA template. However, keep in mind that if 
-you want to use NoRA-Tools after modifying some sensitive page fields, you will 
+you want to use NoRA-Tools after modifying some sensitive page fields, you may 
 need to adjust your [Notion configuration](###notion-configuration) accordingly.
 
 <br>
@@ -60,15 +60,13 @@ need to adjust your [Notion configuration](###notion-configuration) accordingly.
 ### Requirements
 - `npm` installed
 - `conda` installed
-- a Notion account
+- Notion account
 
-### Installing the template
+### Installing the template in Notion
 
 Simply duplicate the [NoRA template](https://silent-switch-780.notion.site/Template-research-library-286d3393a7e845c6a689a5c693790987) to your personal Notion account.
 
-### Installing NoRA tools
-
-First, install the NoRA-Tools locally on your machine.
+### Installing NoRA-Tools on your machine
 
 ```bash
 # clone project
@@ -86,12 +84,12 @@ cd ../..
 
 
 <details>
-<summary><b>Setting up NoRA tools for simpler bash commands (optional, unix machines only)</b></summary>
+<summary><b>Setting up NoRA-Tools for simpler bash commands (optional, unix machines only)</b></summary>
 
-As you will see below, calling NoRA tools requires activating a conda 
-environment and calling a python script. For more convenience, it is also possible to 
-configure NoRA to be called using a simpler bash syntax. To this end, you need to do 
-two things.
+As you will see below, executing NoRA-Tools requires activating a conda 
+environment and calling a python script following a specific syntax. 
+For more convenience, it is also possible to configure NoRA to be called using a 
+simpler bash syntax. To this end, you need to do two things.
 
 First, indicate the path to your conda installation directory in the [`nora`](nora) 
 bash script:
@@ -99,7 +97,7 @@ bash script:
 CONDA_DIR=/path/to/your/conda/installation/directory
 ```
 
-Next, you will need to add the project `nora/` repository to the `$PATH$` environment 
+Next, you will need to add the `nora/` project repository to the `$PATH$` environment 
 variable of your machine. This way, you will be able to call the [`nora`](nora) 
 script from anywhere ! To do this, you typically want to add something like this to your 
 `.bashrc`:
@@ -275,7 +273,7 @@ nora "id='2204.07548'"
 > recommend using quotes as shown above when querying `id=...`. This is to
 > avoid some potential trailing zeros to be ignored when parsing your shell 
 > arguments. For more details on this, see the 
-> [hydra documentation](https://hydra.cc/docs/1.2/advanced/override_grammar/basic/#quoted-values) 
+> [hydra documentation](https://hydra.cc/docs/1.2/advanced/override_grammar/basic/#quoted-values).
 
 > **Note**: NoRA uses `psutil.net_connections()` which requires sudo 
 > privileges on macOS. Unfortunately, there is no workaround this, you will
@@ -287,11 +285,20 @@ nora "id='2204.07548'"
 python nora.py zotero.upload=True
 ```
 
+<details>
+<summary>If you set up NoRA for simpler unix commands</summary>
+
+```bash
+nora zotero.upload=True
+```
+
+</details>
+
 <br>
 
 ## License
 
-NoRA is licensed under the MIT License.
+NoRA is released under the MIT License.
 
 ```
 MIT License
