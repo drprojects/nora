@@ -21,7 +21,7 @@ reference management softwares such as Zotero and Mendeley.
 It is composed of the **NoRA Notion template** for you to build on top of, as 
 well as **NoRA-Tools** to programmatically:
 - 🔥 upload papers to your NORA library as easily as with 
-[Zotero Connector](https://www.zotero.org/download/connectors)
+[Zotero Connector](https://www.zotero.org/download/connectors) from a simple URL or an identifier
 - 🔥 move all your already-existing Zotero library to NoRA
 
 ### 🧪  NoRA template
