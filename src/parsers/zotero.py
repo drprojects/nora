@@ -177,7 +177,7 @@ class ZoteroItem:
             if 'firstName' in creator.keys() and 'lastName' in creator.keys()]
 
     @property
-    def to_read(self):
+    def has_to_read_tag(self):
         for tag in self.item['data'].get('tags', []):
             if tag['tag'].upper() == 'TO READ':
                 return True
@@ -297,7 +297,7 @@ class ZoteroItem:
             self.title,
             authors=[f"{x[0]} {x[1]}" for x in self.authors],
             topics=self.tags,
-            to_read=self.to_read,
+            to_read=True,
             abstract=self.abstract,
             url=self.url,
             year=self.year,
