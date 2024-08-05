@@ -23,11 +23,37 @@ def get_pid_using_port(port):
     return -1
 
 
+def kill_pid_using_port(port=SERVER_PORT, patience=5, timestep=0.1):
+    """Kill the process listening to the selected port.
+    """
+    pid = get_pid_using_port(port)
+
+    if pid is None or pid == -1:
+        return
+
+    os.kill(get_pid_using_port(port), signal.SIGTERM)
+
+    # Wait for the subprocess listening to the selected port to
+    # properly killed. This makes sure we only return from this
+    # function once the server is killed
+    start = time.time()
+    t = 0
+    pid = get_pid_using_port(port)
+
+    while pid is not None and pid > -1 and t < patience:
+        pid = get_pid_using_port(port)
+        time.sleep(timestep)
+        t = time.time() - start
+
+
 def start_server(port=SERVER_PORT, patience=5, timestep=0.1):
     """Create a subprocess running the npm translation-server. We do not
     want to see the logs of the sever in the default console, so we
     pipe the logs elsewhere.
     """
+    # Kill any already-existing process listening to the selected port
+    kill_pid_using_port(port=port, patience=patience, timestep=timestep)
+
     path = os.path.join(dirname(dirname(__file__)), 'translation_server')
     command = ['npm', 'start', '--prefix', path]
     std = subprocess.PIPE
@@ -48,30 +74,12 @@ def start_server(port=SERVER_PORT, patience=5, timestep=0.1):
 
 
 def kill_server(process, port=SERVER_PORT, patience=5, timestep=0.1):
-    """Kill the server and the associated process listening to port
-    1969.
+    """Kill the server and the associated process listening to the
+    selected port.
     """
     process.terminate()
     process.kill()
-    
-    pid = get_pid_using_port(port)
-
-    if pid is None or pid == -1:
-        return
-    
-    os.kill(get_pid_using_port(port), signal.SIGTERM)
-    
-    # Wait for the subprocess listening to the selected port to 
-    # properly killed. This makes sure we only return from this
-    # function once the server is killed
-    start = time.time()
-    t = 0
-    pid = get_pid_using_port(port)
-    
-    while pid is not None and pid > -1 and t < patience:
-        pid = get_pid_using_port(port)
-        time.sleep(timestep)
-        t = time.time() - start
+    kill_pid_using_port(port=port, patience=patience, timestep=timestep)
 
 
 def json_to_python(data):
@@ -95,13 +103,15 @@ def json_to_python(data):
     if isinstance(data, str):
         raise RuntimeError(data)
 
-    # The returned value should be a List(Dict). If this is not the
-    # case, raise an error
-    if not isinstance(data, list):
-        raise ValueError(f"Expected a List, got a {type(data)}")
-    if not isinstance(data[0], dict):
-        raise ValueError(f"Expected a List(Dict), got a List({type(data[0])})")
-    data = data[0]
+    # The returned value should be a Dict or List(Dict). If this is not
+    # the case, raise an error
+    if isinstance(data, list):
+        if isinstance(data[0], dict):
+            data = data[0]
+        else:
+            raise ValueError(f"Expected a List(Dict), got a List({type(data[0])})")
+    elif not isinstance(data, dict):
+        raise ValueError(f"Expected a List or a Dict, got a {type(data)}")
 
     # The returned json dictionary does not have exactly the same
     # structure as what is recovered when querying a ZoteroLibrary.

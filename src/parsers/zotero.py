@@ -154,7 +154,7 @@ class ZoteroItem:
 
     @property
     def title(self):
-        return self.item['data']['title']
+        return self.item['data'].get('title', '')
 
     @property
     def abstract(self):
@@ -173,12 +173,12 @@ class ZoteroItem:
     def authors(self):
         return [
             (creator['firstName'], creator['lastName'])
-            for creator in self.item['data']['creators']
+            for creator in self.item['data'].get('creators', [])
             if 'firstName' in creator.keys() and 'lastName' in creator.keys()]
 
     @property
     def to_read(self):
-        for tag in self.item['data']['tags']:
+        for tag in self.item['data'].get('tags', []):
             if tag['tag'].upper() == 'TO READ':
                 return True
         return False
