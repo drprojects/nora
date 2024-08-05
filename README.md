@@ -6,8 +6,8 @@
 [![hydra](https://img.shields.io/badge/Config-Hydra_1.2-89b8cd)](https://hydra.cc/)
 [![license](https://img.shields.io/badge/License-MIT-green.svg?labelColor=gray)](https://github.com/ashleve/lightning-hydra-template#license)
 
-A Notion template to help you keep track of the papers you read, their authors, 
-your notes and more 🚀⚡🔥
+A Notion template to help you keep track of the papers you read 📜, their authors 👤, 
+your notes 📝, and more 🔥
 
 </div>
 
@@ -20,8 +20,9 @@ reference management softwares such as Zotero and Mendeley.
 
 It is composed of the **NoRA Notion template** for you to build on top of, as 
 well as **NoRA-Tools** to programmatically:
-- 🔥 programmatically upload papers to your NORA library from **arxiv**, **Elsevier Scopus**, **Springer**, or **HAL**
-- 🔥 move all your Zotero library to your NoRA library
+- 🔥 upload papers to your NoRA library as easily as with 
+[Zotero Connector](https://www.zotero.org/download/connectors) from a simple URL or an identifier
+- 🔥 move all your already-existing Zotero library to NoRA
 
 ### 🧪  NoRA template
 
@@ -41,38 +42,70 @@ get familiar with it is probably to play with it 😉 !
 ### 🛠  NoRA-Tools
 
 The NoRA-Tools provide functionalities to programmatically upload data to your 
-NoRA template. For now, the main functionalities are:
+NoRA template. The main functionalities are:
 
-- uploading an arxiv paper (and associated metadata) to NoRA
-- uploading an Elsevier paper from Scopus (and associated metadata) to NoRA
-- uploading a Springer paper (and associated metadata) to NoRA
-- uploading a HAL paper (and associated metadata) to NoRA
+- uploading a paper and associated metadata to NoRA from a URL or 
+from an identifier (DOI, ISBN, PMID, arXiv ID), exactly like with 
+[Zotero Connector](https://www.zotero.org/download/connectors)
 - uploading your whole Zotero library to NoRA 
 
 You can freely modify or extend the NoRA template. However, keep in mind that if 
-you want to use NoRA-Tools after modifying some sensitive page fields, you will 
+you want to use NoRA-Tools after modifying some sensitive page fields, you may 
 need to adjust your [Notion configuration](###notion-configuration) accordingly.
 
 <br>
 
 ## 🧱  Installation
 
-### Installing the template
+### Requirements
+- `npm` installed
+- `conda` installed
+- Notion account
+
+### Installing the template in Notion
 
 Simply duplicate the [NoRA template](https://silent-switch-780.notion.site/Template-research-library-286d3393a7e845c6a689a5c693790987) to your personal Notion account.
 
-### Installing NoRA tools
-
-First, install the NoRA-Tools locally on your machine.
+### Installing NoRA-Tools on your machine
 
 ```bash
 # clone project
-git clone git@github.com:drprojects/nora.git
+git clone --recurse-submodules git@github.com:drprojects/nora.git
 cd nora
 
 # create a 'nora' conda environment with required dependencies
 conda env create -f nora.yml
+
+# install the npm server
+cd src/translation_server
+npm install
+cd ../..
 ```
+
+
+<details>
+<summary><b>Setting up NoRA-Tools for simpler bash commands (optional, <i>Unix machines only</i>)</b></summary>
+
+As you will see below, executing NoRA-Tools requires activating a conda 
+environment and calling a python script following a specific syntax. 
+For more convenience, it is also possible to configure NoRA to be called 
+using a simpler bash syntax on Unix machines. 
+
+To set this up on your machine, you simply need to run the following 
+script once and for all:
+
+```bash
+scripts/add_nora_to_path_unix
+```
+
+Make sure your restart your terminal ro source the `.bashrc` to apply 
+the changes:
+
+```bash
+source ~/.bashrc
+```
+
+</details>
 
 ### Notion configuration
 
@@ -156,35 +189,6 @@ lowercase_match_to_search_for_in_remote_metadata: 'shorthand_under_which_to_grou
 
 </details>
 
-### Elsevier configuration (optional)
-
-If you intend to upload papers from Elsevier to Notion, you will need to configure your
-NoRA-Tools accordingly.
-To this end, you will need to [create an Elsevier **API key**](https://dev.elsevier.com).
-
-You can then save your Elsevier **API key** in the `configs/elsevier/default.yaml` 
-file:
-
-````yaml
-# Adapt to your own Elsevier account.
-# See https://dev.elsevier.com
-api_token: 'your_api_key'
-````
-
-### Springer configuration (optional)
-
-If you intend to upload papers from Springer to Notion, you will need to configure your 
-NoRA-Tools accordingly.
-To this end, you will need to [create a Springer **API key**](https://docs-dev.springernature.com/docs).
-
-You can then save your Springer **API key** in the `configs/springer/default.yaml` 
-file:
-
-````yaml
-# Adapt to your own Springer account.
-# See https://docs-dev.springernature.com/docs
-api_key: 'your_api_key'
-````
 
 ### Zotero configuration (optional)
 
@@ -227,79 +231,53 @@ https_proxy: 'your_https_proxy'
 
 ## ⚡  Using NoRA-Tools
 
-### Uploading an arxiv paper to NoRA
+### Uploading a paper to NoRA
 
-From its arxiv ID:
+NoRA-Tools mimics the behavior of the 
+[Zotero Connector](https://www.zotero.org/download/connectors), which 
+has two mechanisms for uploading a paper.
 
-```bash
-python nora.py arxiv.id=2204.07548
-```
-
-From its URL:
+From a URL:
 
 ```bash
-python nora.py arxiv.id=https://arxiv.org/abs/2204.07548
+# In your activated nora conda environment
+python nora.py url=https://arxiv.org/abs/2204.07548
 ```
 
-From its title:
+<details>
+<summary>If you set up NoRA for simpler Unix commands</summary>
 
 ```bash
-python nora.py arxiv.title="Learning Multi-View Aggregation In the Wild for Large-Scale 3D Semantic Segmentation"
+nora url=https://arxiv.org/abs/2204.07548
 ```
 
-### Uploading an Elsevier paper from Scopus to NoRA
+</details>
 
-From its PII ID:
+From an identifier (DOI, ISBN, PMID, arXiv ID):
 
 ```bash
-python nora.py elsevier.id=S1569843222000656
+# In your activated nora conda environment
+python nora.py "id='2204.07548'"
 ```
 
-From its URL:
+<details>
+<summary>If you set up NoRA for simpler Unix commands</summary>
 
 ```bash
-python nora.py elsevier.id=https://www.sciencedirect.com/science/article/pii/S1569843222000656
+nora "id='2204.07548'"
 ```
 
-From its DOI:
+</details>
 
-```bash
-python nora.py elsevier.doi=10.1016/j.jag.2022.102863
-```
+> **Note**: we use [hydra](https://hydra.cc) for parsing shell commands and 
+> recommend using quotes as shown above when querying `id=...`. This is to
+> avoid some potential trailing zeros to be ignored when parsing your shell 
+> arguments. For more details on this, see the 
+> [hydra documentation](https://hydra.cc/docs/1.2/advanced/override_grammar/basic/#quoted-values).
 
-### Uploading a Springer paper from Scopus to NoRA
-
-From its DOI:
-
-```bash
-python nora.py springer.doi=10.1038/d41586-019-02841-9
-```
-
-From its URL:
-
-```bash
-python nora.py springer.url=https://www.nature.com/articles/d41586-019-02841-9
-```
-
-### Uploading a HAL paper to NoRA
-
-From its HAL ID:
-
-```bash
-python nora.py hal.id=hal-03824190v1
-```
-
-From its URL:
-
-```bash
-python nora.py hal.id=https://hal.science/hal-03824190v1
-```
-
-From its title:
-
-```bash
-python nora.py hal.title="Learning Multi-View Aggregation In the Wild for Large-Scale 3D Semantic Segmentation"
-```
+> **Note**: NoRA uses `psutil.net_connections()` which requires sudo 
+> privileges on macOS. Unfortunately, there is no workaround this, you will
+> need to run `nora` as sudo on macOS.
 
 ### Uploading your entire Zotero library to NoRA
 
@@ -307,11 +285,20 @@ python nora.py hal.title="Learning Multi-View Aggregation In the Wild for Large-
 python nora.py zotero.upload=True
 ```
 
+<details>
+<summary>If you set up NoRA for simpler Unix commands</summary>
+
+```bash
+nora zotero.upload=True
+```
+
+</details>
+
 <br>
 
 ## License
 
-NoRA is licensed under the MIT License.
+NoRA is released under the MIT License.
 
 ```
 MIT License

@@ -1,7 +1,0 @@
-# Adapt to your own Springer account.
-# See https://docs-dev.springernature.com/docs/
-api_key: ???
-
-# Specify one of those when uploading a Springer paper to NoRA
-doi: null
-url: null

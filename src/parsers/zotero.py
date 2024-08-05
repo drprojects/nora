@@ -3,6 +3,8 @@ from pyzotero import zotero
 from src.utils.venues import VENUES
 from src.parsers.arxiv import ArxivItem
 from src.parsers.notion import NotionLibrary
+from src.utils.translation_server import *
+from src.utils.zotero import *
 
 
 __all__ = ['ZoteroLibrary', 'ZoteroItem']
@@ -45,10 +47,10 @@ class ZoteroLibrary:
         ignored = [
             (item, f"non-paper dtype: {item['data']['itemType']}")
             for item in self.items
-            if item['data']['itemType'] not in self.cfg.paper_types]
+            if item['data']['itemType'] not in ZOTERO_SUPPORTED_TYPES]
         self.items = [
             item for item in self.items
-            if item['data']['itemType'] in self.cfg.paper_types]
+            if item['data']['itemType'] in ZOTERO_SUPPORTED_TYPES]
         self.ignored += ignored
         if self.verbose:
             print(f"Found {len(ignored)} non-paper items")
@@ -102,7 +104,9 @@ class ZoteroLibrary:
         return len(self.items)
 
     def __getitem__(self, i):
-        return ZoteroItem(self.cfg, self.items[i], self.library)
+        return ZoteroItem(
+            self.items[i], library=self.library,
+            ignored_collections=self.cfg.ignored_collections)
 
     def __iter__(self):
         for i in range(len(self)):
@@ -114,14 +118,31 @@ class ZoteroLibrary:
 
 class ZoteroItem:
 
-    def __init__(self, cfg, item, library):
-        self.cfg = cfg
-        self.library = library
+    def __init__(self, item, library=None, ignored_collections=None):
         self.item = item
+        self.library = library
 
         self.notes = self.get_notes()
-        self.tags = self.get_tags()
+        self.tags = self.get_tags(ignored_collections)
         self.venue = self.get_venue()
+
+    @classmethod
+    def from_url(cls, url, **kwargs):
+        """Retrieve metadata for a webpage. This mimics the behavior of
+        the Zotero plugin for adding pages from the browser.
+        """
+        return cls(translate_from_url(url, **kwargs))
+
+    @classmethod
+    def from_identifier(cls, identifier, **kwargs):
+        """Retrieve metadata from an identifier (DOI, ISBN, PMID, arXiv
+        ID). Note that for some of these identifiers, the parsed
+        libraries may not provide as extensive metadata as when parsing
+        from the web page with `translate_from_url`. This is typically
+        the case when using the DOI: the crossref database will be used,
+        which usually does not provide paper abstracts.
+        """
+        return cls(translate_from_identifier(identifier, **kwargs))
 
     @property
     def key(self):
@@ -133,11 +154,11 @@ class ZoteroItem:
 
     @property
     def title(self):
-        return self.item['data']['title']
+        return self.item['data'].get('title', '')
 
     @property
     def abstract(self):
-        return self.item['data']['abstractNote']
+        return self.item['data'].get('abstractNote', '')
 
     @property
     def url(self):
@@ -152,19 +173,24 @@ class ZoteroItem:
     def authors(self):
         return [
             (creator['firstName'], creator['lastName'])
-            for creator in self.item['data']['creators']
+            for creator in self.item['data'].get('creators', [])
             if 'firstName' in creator.keys() and 'lastName' in creator.keys()]
 
     @property
     def to_read(self):
-        for tag in self.item['data']['tags']:
+        for tag in self.item['data'].get('tags', []):
             if tag['tag'].upper() == 'TO READ':
                 return True
         return False
 
     @property
     def year(self):
-        date = self.item['data']['date']
+        # See Zotero documentation for fields:
+        date = None
+        for key in ZOTERO_DATE_FIELDS:
+            if key in self.item['data'].keys():
+                date = self.item['data'][key]
+                break
 
         if date is None or len(date) == 0:
             return None
@@ -195,7 +221,13 @@ class ZoteroItem:
     def get_notes(self):
         notes = ''
 
+        if 'meta' not in self.item.keys():
+            return notes
+
         if self.item['meta']['numChildren'] == 0:
+            return notes
+
+        if self.library is None:
             return notes
 
         for child in self.library.children(self.key):
@@ -205,20 +237,25 @@ class ZoteroItem:
 
         return notes
 
-    def get_tags(self):
+    def get_tags(self, ignored_collections=None):
         """This is HACKY and specific to my needs: I do not use the
         Zotero tags but the collections instead. Besides, I exclude some
         collection names which are not useful to me.
         """
         tags = []
+        if 'collections' not in self.item['data'].keys():
+            return tags
         for key in self.item['data']['collections']:
             tags += self.get_collection_ancestors(key)
         # tags = list(set(tags))
-        tags = [t for t in tags if t not in self.cfg.ignored_collections]
+        if ignored_collections is not None:
+            tags = [t for t in tags if t not in ignored_collections]
         return tags
 
     def get_collection_ancestors(self, key):
         names = []
+        if self.library is None:
+            return names
         collection = self.library.collection(key)
         names.append(collection['data']['name'])
         parent_key = collection['data']['parentCollection']
@@ -228,11 +265,14 @@ class ZoteroItem:
 
     def get_venue(self):
         # Search in the item-type specific fields first
-        fields = self.cfg.venue_keys_per_type[self.type]
-        for field in fields:
-            text = self.item['data'][field].lower()
+        fallback_text = None
+        for field in ZOTERO_VENUE_FIELDS:
+            if field not in self.item['data'].keys():
+                continue
+            text = self.item['data'][field]
+            fallback_text = text if not fallback_text else fallback_text
             for key, venue in VENUES.items():
-                if key in text:
+                if key in text.lower():
                     return venue
 
         # Search in the notes
@@ -244,7 +284,7 @@ class ZoteroItem:
         if self.arxiv is not None and self.arxiv != '':
             return ArxivItem(self.arxiv).venue
 
-        return None
+        return fallback_text
 
     def to_notion(self, cfg, verbose=True):
         """Move paper and authors to Notion. Takes a few seconds...
@@ -264,7 +304,7 @@ class ZoteroItem:
             venue=self.venue)
 
         # Second, create the blocks (free text) from the notes
-        if response is not None and self.notes is not None:
+        if response is not None and self.notes is not None and self.notes != '':
             paper_id = response.json()['id']
             NotionLibrary(cfg).append_page_blocks(paper_id, self.notes)
 

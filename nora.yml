@@ -39,6 +39,7 @@ dependencies:
     - notional==0.8.0
     - omegaconf==2.3.0
     - packaging==23.0
+    - psutil==6.0.0
     - pydantic==1.10.7
     - pyparsing==3.0.9
     - pyrootutils==1.0.4
