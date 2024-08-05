@@ -20,7 +20,7 @@ reference management softwares such as Zotero and Mendeley.
 
 It is composed of the **NoRA Notion template** for you to build on top of, as 
 well as **NoRA-Tools** to programmatically:
-- 🔥 upload papers to your NORA library as easily as with 
+- 🔥 upload papers to your NoRA library as easily as with 
 [Zotero Connector](https://www.zotero.org/download/connectors) from a simple URL or an identifier
 - 🔥 move all your already-existing Zotero library to NoRA
 
@@ -84,25 +84,25 @@ cd ../..
 
 
 <details>
-<summary><b>Setting up NoRA-Tools for simpler bash commands (optional, unix machines only)</b></summary>
+<summary><b>Setting up NoRA-Tools for simpler bash commands (optional, <i>Unix machines only</i>)</b></summary>
 
 As you will see below, executing NoRA-Tools requires activating a conda 
 environment and calling a python script following a specific syntax. 
-For more convenience, it is also possible to configure NoRA to be called using a 
-simpler bash syntax. To this end, you need to do two things.
+For more convenience, it is also possible to configure NoRA to be called 
+using a simpler bash syntax on Unix machines. 
 
-First, indicate the path to your conda installation directory in the [`nora`](nora) 
-bash script:
+To set this up on your machine, you simply need to run the following 
+script once and for all:
+
 ```bash
-CONDA_DIR=/path/to/your/conda/installation/directory
+scripts/add_nora_to_path_unix
 ```
 
-Next, you will need to add the `nora/` project repository to the `$PATH$` environment 
-variable of your machine. This way, you will be able to call the [`nora`](nora) 
-script from anywhere ! To do this, you typically want to add something like this to your 
-`.bashrc`:
+Make sure your restart your terminal ro source the `.bashrc` to apply 
+the changes:
+
 ```bash
-export PATH=/path/to/repository/nora${PATH:+:${PATH}}
+source ~/.bashrc
 ```
 
 </details>
@@ -245,7 +245,7 @@ python nora.py url=https://arxiv.org/abs/2204.07548
 ```
 
 <details>
-<summary>If you set up NoRA for simpler unix commands</summary>
+<summary>If you set up NoRA for simpler Unix commands</summary>
 
 ```bash
 nora url=https://arxiv.org/abs/2204.07548
@@ -261,7 +261,7 @@ python nora.py "id='2204.07548'"
 ```
 
 <details>
-<summary>If you set up NoRA for simpler unix commands</summary>
+<summary>If you set up NoRA for simpler Unix commands</summary>
 
 ```bash
 nora "id='2204.07548'"
@@ -286,7 +286,7 @@ python nora.py zotero.upload=True
 ```
 
 <details>
-<summary>If you set up NoRA for simpler unix commands</summary>
+<summary>If you set up NoRA for simpler Unix commands</summary>
 
 ```bash
 nora zotero.upload=True

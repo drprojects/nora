@@ -31,10 +31,12 @@ def main(cfg):
 
     # Fallback message
     else:
-        print("Did not receive any argument requiring an upload to NORA")
+        print(
+            "NoRA did not receive any argument. Please use `id=...` or "
+            "`url=...` to specify a paper to be uploaded.")
         item = None
 
-    # Upload data to NORA
+    # Upload data to NoRA
     if item is not None:
         item.to_notion(cfg.notion, verbose=cfg.verbose)
 
