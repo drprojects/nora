@@ -9,6 +9,8 @@
 A Notion template to help you keep track of the papers you read 📜, their authors 👤, 
 your notes 📝, and more 🔥
 
+**_If you ❤️ or simply use this project, don't forget to give the repository a ⭐,
+it means a lot to us !_**
 </div>
 
 <br>
