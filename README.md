@@ -72,8 +72,9 @@ Simply duplicate the [NoRA template](https://silent-switch-780.notion.site/Templ
 
 ```bash
 # clone project
-git clone --recurse-submodules git@github.com:drprojects/nora.git
+git clone https://github.com/drprojects/nora
 cd nora
+git submodule add https://github.com/drprojects/translation_server src/translation_server
 
 # create a 'nora' conda environment with required dependencies
 conda env create -f nora.yml
