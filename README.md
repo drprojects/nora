@@ -72,10 +72,10 @@ Simply duplicate the [NoRA template](https://silent-switch-780.notion.site/Templ
 
 ```bash
 # clone project
-git clone --recurse-submodules git@github.com:drprojects/nora.git
-cd nora
+git clone --recurse-submodules https://github.com/drprojects/nora
 
 # create a 'nora' conda environment with required dependencies
+cd nora
 conda env create -f nora.yml
 
 # install the npm server
