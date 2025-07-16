@@ -21,7 +21,7 @@ dependencies:
   - pip:
     - antlr4-python3-runtime==4.9.3
     - anyio==3.6.2
-    - arxiv==1.4.3
+    - arxiv==2.2.0
     - attrs==19.3.0
     - bibtexparser==1.4.0
     - charset-normalizer==3.1.0
