@@ -60,9 +60,13 @@ need to adjust your [Notion configuration](###notion-configuration) accordingly.
 ## 🧱  Installation
 
 ### Requirements
-- `npm` installed
+- `npm 20` installed with version
 - `conda` installed
 - Notion account
+
+> **Note**: We have experienced issues with too-recent `npm` versions 
+> such as `npm 23` so we recommend making sure you use `npm 20` for now. 
+
 
 ### Installing the template in Notion
 
@@ -276,10 +280,6 @@ nora "id='2204.07548'"
 > avoid some potential trailing zeros to be ignored when parsing your shell 
 > arguments. For more details on this, see the 
 > [hydra documentation](https://hydra.cc/docs/1.2/advanced/override_grammar/basic/#quoted-values).
-
-> **Note**: NoRA uses `psutil.net_connections()` which requires sudo 
-> privileges on macOS. Unfortunately, there is no workaround this, you will
-> need to run `nora` as sudo on macOS.
 
 ### Uploading your entire Zotero library to NoRA
 
