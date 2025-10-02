@@ -66,6 +66,7 @@ need to adjust your [Notion configuration](###notion-configuration) accordingly.
 
 > **Note**: We have experienced issues with too-recent `npm` versions 
 > such as `npm 23` so we recommend making sure you use `npm 20` for now. 
+> You can check your npm version by running `node -v`.
 
 
 ### Installing the template in Notion
