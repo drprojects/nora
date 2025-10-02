@@ -196,7 +196,7 @@ def json_to_python(data):
 
 def translate_from_url(url, timeout=20):
     start_server()
-    print(f"ℹ️ Retrieving metadata for URL: {url} ...")
+    print(f"ℹ️  Retrieving metadata for URL: {url} ...")
     try:
         out = subprocess.check_output([
             'curl', '-s', '-S', '-d', url, '-m', f'{timeout}', '-H', "Content-Type: text/plain", f"{SERVER_IP}/web"

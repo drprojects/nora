@@ -290,7 +290,7 @@ class ZoteroItem:
         """Move paper and authors to Notion. Takes a few seconds...
         """
         if verbose:
-            print(f"⬆️ Uploading '{self.title}'...")
+            print(f"⬆️  Uploading '{self.title}'...")
 
         # First, create the paper and its properties
         response = NotionLibrary(cfg).create_paper(

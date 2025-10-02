@@ -113,7 +113,7 @@ class NotionLibrary:
         # Skip if person already exists in the database
         name = name[:self.cfg.max_text_length]
         if len(self.get_people(name_equals=name)) > 0:
-            print(f"ℹ️ Person '{name}' already exists")
+            print(f"ℹ️  Person '{name}' already exists")
             return
 
         data = {
@@ -156,7 +156,7 @@ class NotionLibrary:
         # Skip if paper already exists in the database
         name = name[:self.cfg.max_text_length]
         if len(self.get_papers(name_equals=name)) > 0:
-            print(f"ℹ️ Paper '{name}' already exists")
+            print(f"ℹ️  Paper '{name}' already exists")
             return
 
         data = {
@@ -225,7 +225,7 @@ class NotionLibrary:
         # Skip if affiliation already exists in the database
         name = name[:self.cfg.max_text_length]
         if len(self.get_affiliations(name_equals=name)) > 0:
-            print(f"ℹ️ Affiliation '{name}' already exists")
+            print(f"ℹ️  Affiliation '{name}' already exists")
             return
 
         # Prepare the Notion API json
@@ -239,7 +239,7 @@ class NotionLibrary:
         # Skip if venue already exists in the database
         name = name[:self.cfg.max_text_length]
         if len(self.get_venues(name_equals=name)) > 0:
-            print(f"ℹ️ Venue '{name}' already exists")
+            print(f"ℹ️  Venue '{name}' already exists")
             return
 
         # Prepare the Notion API json
@@ -253,7 +253,7 @@ class NotionLibrary:
         # Skip if venue already exists in the database
         name = name[:self.cfg.max_text_length]
         if len(self.get_topics(name_equals=name)) > 0:
-            print(f"ℹ️ Topic '{name}' already exists")
+            print(f"ℹ️  Topic '{name}' already exists")
             return
 
         # Prepare the Notion API json
