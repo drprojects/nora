@@ -6,6 +6,7 @@ import signal
 import subprocess
 import socket
 import atexit
+import platform
 from os.path import dirname
 
 __all__ = ['translate_from_url', 'translate_from_identifier']
@@ -22,7 +23,7 @@ _translation_process = None
 # Utility Functions
 # ------------------------------
 
-def get_pid_using_port(port):
+def get_pid_using_port_unix(port):
     """Recover the PID of the process using a given port."""
     for con in psutil.net_connections():
         if con.laddr and con.laddr.port == port:
@@ -31,6 +32,21 @@ def get_pid_using_port(port):
             return con.pid
     return -1
 
+
+def get_pid_using_port_osx(port):
+    try:
+        out = subprocess.check_output(['lsof', '-ti', f':{port}'])
+        pids = [int(p) for p in out.decode().split()]
+        return pids[0] if pids else -1
+    except subprocess.CalledProcessError:
+        return -1
+
+
+def get_pid_using_port(port):
+    if platform.system() == "Darwin":
+        return get_pid_using_port_osx(port)
+    else:
+        return get_pid_using_port_unix(port)
 
 def is_port_open(port):
     """True if something is listening on the port."""
