@@ -129,7 +129,7 @@ class ArxivItem:
         """Move paper and authors to Notion. Takes a few seconds...
         """
         if verbose:
-            print(f"Uploading '{self.title}'...", end=' ')
+            print(f"⬆️  Uploading '{self.title}'...")
 
         # First, create the paper and its properties
         response = NotionLibrary(cfg).create_paper(
@@ -148,7 +148,7 @@ class ArxivItem:
             NotionLibrary(cfg).append_page_blocks(paper_id, self.notes)
 
         if verbose:
-            print('Done')
+            print('✅ Done')
 
     def __repr__(self):
         info = [

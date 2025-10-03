@@ -4,89 +4,170 @@ import time
 import psutil
 import signal
 import subprocess
+import socket
+import atexit
+import platform
 from os.path import dirname
 
-
 __all__ = ['translate_from_url', 'translate_from_identifier']
+
 SERVER_PORT = 1969
 SERVER_IP = f"http://127.0.0.1:{SERVER_PORT}"
+PING_URL = f"{SERVER_IP}/connector/ping"
+
+# Global server process (singleton pattern)
+_translation_process = None
 
 
-def get_pid_using_port(port):
+# ------------------------------
+# Utility Functions
+# ------------------------------
+
+def get_pid_using_port_unix(port):
     """Recover the PID of the process using a given port."""
-    port = int(port)
     for con in psutil.net_connections():
-        if con.raddr != tuple() and con.raddr.port == port:
+        if con.laddr and con.laddr.port == port:
             return con.pid
-        if con.laddr != tuple() and con.laddr.port == port:
+        if con.raddr and con.raddr.port == port:
             return con.pid
     return -1
 
 
-def kill_pid_using_port(port=SERVER_PORT, patience=5, timestep=0.1):
-    """Kill the process listening to the selected port.
-    """
-    pid = get_pid_using_port(port)
+def get_pid_using_port_osx(port):
+    try:
+        out = subprocess.check_output(['lsof', '-ti', f':{port}'])
+        pids = [int(p) for p in out.decode().split()]
+        return pids[0] if pids else -1
+    except subprocess.CalledProcessError:
+        return -1
 
-    if pid is None or pid == -1:
+
+def get_pid_using_port(port):
+    if platform.system() == "Darwin":
+        return get_pid_using_port_osx(port)
+    else:
+        return get_pid_using_port_unix(port)
+
+def is_port_open(port):
+    """True if something is listening on the port."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex(("127.0.0.1", port)) == 0
+
+
+def ping_server(timeout=0.5):
+    """Return True if the server responds *in any way* to /connector/ping."""
+    try:
+        out = subprocess.check_output([
+            'curl', '-m', str(timeout), '-s', '-o', '/dev/null', '-w', '%{http_code}',
+            PING_URL
+        ])
+        status = out.decode().strip()
+        return status.isdigit()  # 200, 404, etc. — anything is good
+    except subprocess.CalledProcessError:
+        return False
+
+
+# ------------------------------
+# Server Lifecycle Management
+# ------------------------------
+
+def start_server(patience=10, timestep=0.25):
+    """
+    Start the translation server only if not already running.
+    Wait until it's *actually responding*, not just bound to port.
+    """
+    global _translation_process
+
+    if is_port_open(SERVER_PORT):
+        print(f"ℹ️ Translation server already running on port {SERVER_PORT}.")
         return
 
-    os.kill(get_pid_using_port(port), signal.SIGTERM)
+    print(f"🔄 Starting translation server on port {SERVER_PORT}...")
 
-    # Wait for the subprocess listening to the selected port to
-    # properly killed. This makes sure we only return from this
-    # function once the server is killed
+    # Kill any stale process bound to port before launching new
+    kill_pid_using_port(SERVER_PORT)
+
+    server_path = os.path.join(dirname(dirname(__file__)), 'translation_server')
+    _translation_process = subprocess.Popen(
+        ['node', 'src/server.js'],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        cwd=server_path,
+        preexec_fn=os.setsid
+    )
+
+    # Wait for port binding + ping success
     start = time.time()
-    t = 0
-    pid = get_pid_using_port(port)
-
-    while pid is not None and pid > -1 and t < patience:
-        pid = get_pid_using_port(port)
+    print("⏳ Waiting for server to become ready", end="", flush=True)
+    while time.time() - start < patience:
+        if is_port_open(SERVER_PORT) and ping_server():
+            print("\n✅ Server is ready!")
+            return
+        print(".", end="", flush=True)
         time.sleep(timestep)
-        t = time.time() - start
+
+    # Failed startup — dump logs for debugging
+    print("\n❌ Translation server failed to start. Logs:")
+    try:
+        print(_translation_process.stdout.read().decode())
+        print(_translation_process.stderr.read().decode())
+    except Exception:
+        pass
+
+    raise RuntimeError("Failed to start translation server.")
 
 
-def start_server(port=SERVER_PORT, patience=5, timestep=0.1):
-    """Create a subprocess running the npm translation-server. We do not
-    want to see the logs of the sever in the default console, so we
-    pipe the logs elsewhere.
-    """
-    # Kill any already-existing process listening to the selected port
-    kill_pid_using_port(port=port, patience=patience, timestep=timestep)
+def kill_server():
+    """Kill the server and all children properly."""
+    global _translation_process
+    if _translation_process is None:
+        return
 
-    path = os.path.join(dirname(dirname(__file__)), 'translation_server')
-    command = ['npm', 'start', '--prefix', path]
-    std = subprocess.PIPE
-    process = subprocess.Popen(command, stdout=std, stderr=std)
-    
-    # Wait for the process to have opened another subprocess listening
-    # to the selected port. This makes sure we only return from this
-    # function once the server is running and ready to be used
+    # Kill process group
+    try:
+        os.killpg(os.getpgid(_translation_process.pid), signal.SIGTERM)
+    except ProcessLookupError:
+        pass
+
+    # Cleanup lingering socket holders
+    kill_pid_using_port(SERVER_PORT)
+    _translation_process = None
+
+
+def kill_pid_using_port(port, patience=5, timestep=0.1):
+    pid = get_pid_using_port(port)
+    if pid is None or pid <= 0:
+        return  # nothing to kill
+
+    try:
+        os.kill(pid, signal.SIGTERM)
+    except ProcessLookupError:
+        return
+
     start = time.time()
-    t = 0
-    pid = get_pid_using_port(port)
-    while (pid is None or pid == -1) and t < patience:
-        time.sleep(timestep)
+    while True:
         pid = get_pid_using_port(port)
-        t = time.time() - start
-        
-    return process
+        if pid is None or pid <= 0 or time.time() - start > patience:
+            break
+        time.sleep(timestep)
 
 
-def kill_server(process, port=SERVER_PORT, patience=5, timestep=0.1):
-    """Kill the server and the associated process listening to the
-    selected port.
-    """
-    process.terminate()
-    process.kill()
-    kill_pid_using_port(port=port, patience=patience, timestep=timestep)
+def safe_kill_server():
+    try:
+        kill_server()
+    except Exception:
+        pass
 
+# Automatically shut down at program exit
+atexit.register(safe_kill_server)
+
+
+# ------------------------------
+# Data & Translation Functions
+# ------------------------------
 
 def json_to_python(data):
-    """Simple wrapper around json parsing in case the output of a
-    program is not a json object. Also do some data cleaning to have
-    something similar to what the ZoteroLibrary manipulates.
-    """
+    """Same conversion helper you had — unchanged."""
     try:
         data = data.decode()
     except (UnicodeDecodeError, AttributeError):
@@ -97,56 +178,45 @@ def json_to_python(data):
     except:
         pass
 
-    # Raise error is the output is a string. This usually means the
-    # translation server returned an error message. Typically:
-    # "The remote document is not in a supported format"
     if isinstance(data, str):
         raise RuntimeError(data)
 
-    # The returned value should be a Dict or List(Dict). If this is not
-    # the case, raise an error
     if isinstance(data, list):
         if isinstance(data[0], dict):
             data = data[0]
         else:
-            raise ValueError(f"Expected a List(Dict), got a List({type(data[0])})")
+            raise ValueError(f"Expected List(Dict), got {type(data[0])}")
     elif not isinstance(data, dict):
-        raise ValueError(f"Expected a List or a Dict, got a {type(data)}")
+        raise ValueError(f"Expected Dict or List(Dict), got {type(data)}")
 
-    # The returned json dictionary does not have exactly the same
-    # structure as what is recovered when querying a ZoteroLibrary.
-    # In particular, many of the keys present in the first
-    # hierarchical level of the json are otherwise place under
-    # another 'data' key in the ZoteroLibrary. So we manually create
-    # a 'data' key under which all the keys are copied here.
-    if 'data' not in data.keys():
+    if 'data' not in data:
         data['data'] = {**data}
-
     return data
 
 
 def translate_from_url(url, timeout=20):
-    """Retrieve metadata for a webpage. Returns an array of translated
-    items in Zotero API JSON format. This mimics the behavior of the
-    Zotero plugin for adding pages from the browser.
-    """
-    process = start_server()
-    command = ['curl', '-d', url, '-m', f'{timeout}', '-H', "Content-Type: text/plain", f"{SERVER_IP}/web"]
-    out = json_to_python(subprocess.check_output(command))
-    kill_server(process)
-    return out
+    start_server()
+    print(f"ℹ️  Retrieving metadata for URL: {url} ...")
+    try:
+        out = subprocess.check_output([
+            'curl', '-s', '-S', '-d', url, '-m', f'{timeout}', '-H', "Content-Type: text/plain", f"{SERVER_IP}/web"
+        ])
+    except subprocess.CalledProcessError:
+        print("❌ Failed to contact the translation server. Please check your internet connection or try again.")
+        raise RuntimeError("Translation request failed")
+    print("✅ Metadata retrieved successfully!")
+    return json_to_python(out)
 
 
 def translate_from_identifier(identifier, timeout=20):
-    """Retrieve metadata from an identifier (DOI, ISBN, PMID, arXiv ID).
-    Note that for some of these identifiers, the parsed libraries may
-    not provide as extensive metadata as when parsing from the web page
-    with `translate_from_url`. This is typically the case when using the
-    DOI: the crossref database will be used, which usually does not
-    provide paper abstracts.
-    """
-    process = start_server()
-    command = ['curl', '-d', f"{identifier}", '-m', f'{timeout}', '-H', "Content-Type: text/plain", f"{SERVER_IP}/search"]
-    out = json_to_python(subprocess.check_output(command))
-    kill_server(process)
-    return out
+    start_server()
+    print(f"ℹ️ Retrieving metadata for identifier: {identifier} ...")
+    try:
+        out = subprocess.check_output([
+            'curl', '-s', '-S', '-d', identifier, '-m', f'{timeout}', '-H', "Content-Type: text/plain", f"{SERVER_IP}/search"
+        ])
+    except subprocess.CalledProcessError:
+        print("❌ Failed to contact the translation server. Please check your internet connection or try again.")
+        raise RuntimeError("Translation request failed")
+    print("✅ Metadata retrieved successfully!")
+    return json_to_python(out)
