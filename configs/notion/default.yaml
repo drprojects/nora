@@ -1,11 +1,11 @@
 # Adapt to your own Notion library.
 # See https://developers.notion.com/docs/create-a-notion-integration
-token: "secret_v9ogw4T8HFJgbryLZkoR3ihLhCVE70IAVJfVvIzCswn"
-papers_db_id: "dffab1fbfc154c839bec70b3c27d1e4c"
-people_db_id: "bdee1655672d4252aa5fda154d19721e"
-affiliations_db_id: "181660fccf9d49b4886bb54f8a82f01f"
-venues_db_id: 'd994cc0b50084286b2687095d13229fe'
-topics_db_id: "e0e35a96a1cd4a6db23ab6ec8aca2634"
+token: ???
+papers_db_id: ???
+people_db_id: ???
+affiliations_db_id: ???
+venues_db_id: ???
+topics_db_id: ???
 
 # If you happen to modify your field names in Notion, update the
 # following database-specific keys
