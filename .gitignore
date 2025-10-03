@@ -2,3 +2,7 @@
 __pycache__
 notebooks
 outputs
+logs
+*.ipynb
+.ipynb_checkpoints
+.DS_Store
