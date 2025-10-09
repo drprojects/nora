@@ -1,7 +1,7 @@
 # Adapt to your own Zotero library
 library_id: ${oc.env:zotero_library_id, "???"}
 api_token: ${oc.env:zotero_api_token, "???"}
-ignored_collections: ['_ CVPR 2022', '_ PENDING READS']
+ignored_collections: []
 
 # Switch to trigger the upload
 upload: False
