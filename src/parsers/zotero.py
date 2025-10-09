@@ -5,6 +5,7 @@ from src.parsers.arxiv import ArxivItem
 from src.parsers.notion import NotionLibrary
 from src.utils.translation_server import *
 from src.utils.zotero import *
+from src.utils.env import sanity_check_config
 
 
 __all__ = ['ZoteroLibrary', 'ZoteroItem']
@@ -13,6 +14,10 @@ __all__ = ['ZoteroLibrary', 'ZoteroItem']
 class ZoteroLibrary:
 
     def __init__(self, cfg, verbose=False):
+        keys = ['library_id', 'api_token']
+        env_variables = [f"zotero_{k}" for k in keys]
+        sanity_check_config(cfg, keys, env_variables)
+
         self.cfg = cfg
         self.verbose = verbose
         self.library = None

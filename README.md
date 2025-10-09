@@ -18,7 +18,7 @@ it means a lot to us !_**
 ## 📌  Introduction
 
 This project was built as a [Notion](https://www.notion.so)-based alternative to 
-reference management softwares such as Zotero and Mendeley.
+reference management software such as Zotero and Mendeley.
 
 It is composed of the **NoRA Notion template** for you to build on top of, as 
 well as **NoRA-Tools** to programmatically:
@@ -120,30 +120,35 @@ Next, you will need to configure your NoRA-Tools to connect to your NoRA databas
 To this end, do the following:
 - [Create an integration](https://developers.notion.com/docs/create-a-notion-integration) for your NoRA workspace
 - [Recover your **API secret token**](https://developers.notion.com/docs/create-a-notion-integration#get-your-api-secret)
-- For each database in the NoRA template (ie Papers, People, Affiliations, Venues, Topics):
+- For each database in the NoRA template (i.e. Papers, People, Affiliations, Venues, Topics):
   - [Give your integration permission to access this database](https://developers.notion.com/docs/create-a-notion-integration#give-your-integration-page-permissions)
   - Recover your **database ID**. For this, open the database page **in a browser**. The
 database ID is a 32-alphanumeric-character that can be recovered from the URL of the page:
 `https://www.notion.so/this_is_your_32_character_database_id?v=you_can_ignore_the_rest`
 
-Once you have recovered your **API secret token** and the **database IDs**, you must save 
-these in the `configs/notion/default.yaml` file:
+Once you have recovered your **API secret token** and the **database IDs**, 
+create a **new file called `.env` in your project's root directory** and add 
+the following environment variables:
 
-````yaml
-# Adapt to your own Notion library.
-# See https://developers.notion.com/docs/create-a-notion-integration
-token: "your_api_secret_token"
-papers_db_id: "your_papers_database_id"
-people_db_id: "your_people_database_id"
-affiliations_db_id: "your_affiliations_database_id"
-venues_db_id: "your_venues_database_id"
-topics_db_id: "your_topics_database_id"
+````bash
+# Adapt to your own Notion library
+notion_token="your_api_secret_token"
+notion_papers_db_id="your_papers_database_id"
+notion_people_db_id="your_people_database_id"
+notion_affiliations_db_id="your_affiliations_database_id"
+notion_venues_db_id="your_venues_database_id"
+notion_topics_db_id="your_topics_database_id"
 ````
+
+> **Note**: The `.env.example` file gives you an example of what your `.env` 
+> file should look like. Importantly, the `.env` file will be excluded from 
+> version control in `.gitignore`, so you don't have to worry about sharing your 
+> secret tokens with other users.
 
 <details>
 <summary><b>⚠️ Want to modify some field names in NoRA ?️</b></summary>
 
-By default, NoRA-Tools expect the attribute fields (eg column names in Notion) of your papers, people, etc. to have specific values.
+By default, NoRA-Tools expect the attribute fields (e.g. column names in Notion) of your papers, people, etc. to have specific values.
 If you want to adjust those, you will also need to adjust the `configs/notion/default.yaml` file:
 
 ````yaml
@@ -205,19 +210,23 @@ To this end, you will need to:
 - Get your Zotero **library ID** by checking the UserID in your [profile settings](https://www.zotero.org/settings/keys)
 - Create a Zotero **API key** in your [profile settings](https://www.zotero.org/settings/keys)
 
-You can then save your Zotero **library ID** and **API key** in the 
-`configs/zotero/default.yaml` file:
+You can then save your Zotero **library ID** and **API key** in the `.env` file:
 
-````yaml
+````bash
 # Adapt to your own Zotero library
-library_id: 'your_library_id'
-api_token: 'your_api_key'
+zotero_library_id="your_library_id"
+zotero_api_token="your_api_key"
 ````
 
-By default, the `collections` (eg folders) in your Zotero library will be used to 
+> **Note**: The `.env.example` file gives you an example of what your `.env` 
+> file should look like. Importantly, the `.env` file will be excluded from 
+> version control in `.gitignore`, so you don't have to worry about sharing your 
+> secret tokens with other users.
+
+By default, the `collections` (e.g. folders) in your Zotero library will be used to 
 populate the `Key Topics` field of your papers in NoRA.
 If you want to exclude some of your collections from this behavior, your can list 
-them in:
+them in the `configs/zotero/default.yaml` file:
 
 ````yaml
 ignored_collections: ['collection name 1', 'collection name 2']
@@ -227,12 +236,17 @@ ignored_collections: ['collection name 1', 'collection name 2']
 
 If your machine has a proxy, you will need to configure your NoRA-Tools to use it.
 To this end, specify your `$HTTP_PROXY` and `$HTTPS_PROXY` in the 
-`configs/proxy/default.yaml` file:
+`.env` file:
 
 ````yaml
-http_proxy: 'your_http_proxy'
-https_proxy: 'your_https_proxy'
+HTTP_PROXY: 'your_http_proxy'
+HTTPS_PROXY: 'your_https_proxy'
 ````
+
+> **Note**: The `.env.example` file gives you an example of what your `.env` 
+> file should look like. Importantly, the `.env` file will be excluded from 
+> version control in `.gitignore`, so you don't have to worry about sharing your 
+> secret tokens with other users.
 
 <br>
 

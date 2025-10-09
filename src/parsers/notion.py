@@ -1,6 +1,7 @@
 import requests
 import mistletoe
 from notional.parser import HtmlParser
+from src.utils.env import sanity_check_config
 
 
 __all__ = ['NotionLibrary']
@@ -20,6 +21,16 @@ class NotionLibrary:
     # TODO: automatically generate bibtex from notion (maybe parse arxiv first)
 
     def __init__(self, cfg):
+        keys = [
+            'token',
+            'papers_db_id',
+            'people_db_id',
+            'affiliations_db_id',
+            'venues_db_id',
+            'topics_db_id']
+        env_variables = [f"notion_{k}" for k in keys]
+        sanity_check_config(cfg, keys, env_variables)
+
         self.cfg = cfg
         self.headers = {
             "authorization": "Bearer " + self.cfg.token,
