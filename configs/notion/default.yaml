@@ -17,13 +17,13 @@ person_keys:
 
 paper_keys:
     name: 'Name'
-    authors: '👤 Authors'
+    authors: 'Authors'
     abstract:  'Abstract'
-    topics: '🧲 Key topics'
+    topics: 'Topics / Tags'
     url: 'URL'
     to_read: 'Reading status'
     year: 'Year'
-    venue:  '🤹 Venue'
+    venue:  'Venue'
 
 affiliation_keys:
     name: 'Name'
