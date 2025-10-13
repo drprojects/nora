@@ -15,6 +15,9 @@ SERVER_PORT = 1969
 SERVER_IP = f"http://127.0.0.1:{SERVER_PORT}"
 PING_URL = f"{SERVER_IP}/connector/ping"
 
+# `subprocess.check_output` return value for an internal server error
+INTERNAL_SERVER_ERROR = b"Internal Server Error"
+
 # Global server process (singleton pattern)
 _translation_process = None
 
@@ -204,6 +207,11 @@ def translate_from_url(url, timeout=20):
     except subprocess.CalledProcessError:
         print("❌ Failed to contact the translation server. Please check your internet connection or try again.")
         raise RuntimeError("Translation request failed")
+    
+    if out == INTERNAL_SERVER_ERROR:
+        print("❌ The translation server encountered an internal error. Try a different URL.")
+        raise RuntimeError("Translation request failed")
+
     print("✅ Metadata retrieved successfully!")
     return json_to_python(out)
 
