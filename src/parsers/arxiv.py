@@ -1,5 +1,6 @@
-import arxiv
 import re
+import sys
+import arxiv
 from src.utils.venues import VENUES
 from src.parsers.notion import NotionLibrary
 
@@ -40,11 +41,13 @@ class ArxivItem:
 
             # Check whether arxiv id format before March 2007
             if not bool(re.search(r'[0-9]{4}\.[0-9]', arxiv_id)):
-                raise ValueError(
-                    f"The arxiv identifier '{arxiv_id}' does not follow the arxiv format "
-                    f"defined for articles published after March 2007. At the moment, only"
-                    f"articles following this pattern are supported. Please refer to:"
+                print(
+                    f"❌ The arxiv identifier '{arxiv_id}' does not follow the "
+                    f"arxiv format defined for articles published after March "
+                    f"2007. At the moment, only articles following this "
+                    f"pattern are supported. Please refer to:"
                     f"https://info.arxiv.org/help/arxiv_identifier.html")
+                sys.exit(1)
 
             # Isolate the YYMM.NNNNN sequence
             arxiv_id = arxiv_id.split('/')[-1]
@@ -62,7 +65,8 @@ class ArxivItem:
             self.id = arxiv_id
             results = list(CLIENT.results(arxiv.Search(id_list=[arxiv_id])))
             if len(results) == 0:
-                raise ValueError(f"Could not find paper with id='{arxiv_id}'")
+                print(f"❌ Could not find paper with id='{arxiv_id}'")
+                sys.exit(1)
             self._item = results[0]
             return
 
@@ -72,12 +76,14 @@ class ArxivItem:
                 sort_by=arxiv.SortCriterion.Relevance)))
             results = [res for res in results if title in res.title]
             if len(results) == 0:
-                raise ValueError(f"Could not find paper with title='{title}'")
+                print(f"❌ Could not find paper with title='{title}'")
+                sys.exit(1)
             if len(results) > 1:
-                msg = f"Found multiple papers matching title='{title}'. " \
+                msg = f"❌ Found multiple papers matching title='{title}'. " \
                       f"Please refine among the following:\n" + \
                       '\n'.join([res.title for res in results])
-                raise ValueError(msg)
+                print(msg)
+                sys.exit(1)
             self.id = results[0].entry_id.split('/')[-1].replace('.pdf', '')
             self._item = results[0]
 

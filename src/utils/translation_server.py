@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import time
 import psutil
@@ -114,7 +115,8 @@ def start_server(patience=10, timestep=0.25):
     except Exception:
         pass
 
-    raise RuntimeError("Failed to start translation server.")
+    print("Failed to start translation server.")
+    sys.exit(1)
 
 
 def kill_server():
@@ -179,18 +181,26 @@ def json_to_python(data):
         pass
 
     if isinstance(data, str):
-        raise RuntimeError(data)
+        print(f"❌ The translation server returned an error message:\n{data}")
+        sys.exit(1)
 
     if isinstance(data, list):
         if isinstance(data[0], dict):
             data = data[0]
         else:
-            raise ValueError(f"Expected List(Dict), got {type(data[0])}")
+            print(
+                f"❌ Expected a List(Dict), but received a "
+                f"List({type(data[0])}):\n{data}")
+            sys.exit(1)
     elif not isinstance(data, dict):
-        raise ValueError(f"Expected Dict or List(Dict), got {type(data)}")
+        print(f"❌ Expected a Dict or a List(Dict), got a {type(data)}:\n{data}")
+        sys.exit(1)
 
     if 'data' not in data:
         data['data'] = {**data}
+
+    print("✅ Metadata retrieved successfully!")
+
     return data
 
 
@@ -203,8 +213,7 @@ def translate_from_url(url, timeout=20):
         ])
     except subprocess.CalledProcessError:
         print("❌ Failed to contact the translation server. Please check your internet connection or try again.")
-        raise RuntimeError("Translation request failed")
-    print("✅ Metadata retrieved successfully!")
+        sys.exit(1)
     return json_to_python(out)
 
 
@@ -217,6 +226,5 @@ def translate_from_identifier(identifier, timeout=20):
         ])
     except subprocess.CalledProcessError:
         print("❌ Failed to contact the translation server. Please check your internet connection or try again.")
-        raise RuntimeError("Translation request failed")
-    print("✅ Metadata retrieved successfully!")
+        sys.exit(1)
     return json_to_python(out)
