@@ -146,7 +146,7 @@ notion_topics_db_id="your_topics_database_id"
 > secret tokens with other users.
 
 <details>
-<summary><b>⚠️ Want to modify some field names in NoRA ?️</b></summary>
+<summary><b>⚠️ Want to modify some field names in NoRA?️</b></summary>
 
 By default, NoRA-Tools expect the attribute fields (e.g. column names in Notion) of your papers, people, etc. to have specific values.
 If you want to adjust those, you will also need to adjust the `configs/notion/default.yaml` file:
@@ -181,7 +181,7 @@ venue_keys:
 
 <details>
 <summary><b>
-⚠️ Want to add your own 🤹 Conferences & journals ?️</b></summary>
+⚠️ Want to add your own 🤹 Conferences & journals?️</b></summary>
 
 By default, when parsing a paper from a remote database, NoRA-Tools will try to 
 figure out which `🤹 Conferences & journals` to place it under. However, one 
@@ -198,6 +198,17 @@ this dictionary, and you would like them to be grouped under the same
 ````python
 lowercase_match_to_search_for_in_remote_metadata: 'shorthand_under_which_to_group'
 ````
+
+</details>
+
+<details>
+<summary><b>
+⚠️ Using a `.netrc` file with a `default`?</b></summary>
+
+If you are using a `~/.netrc` file to keep track of your passwords locally, 
+and have declared a `default` account among your configurations, the `requests`
+library will crash when trying to connect to Notion. Please remove your 
+`default` account and all should be fine 😉
 
 </details>
 
