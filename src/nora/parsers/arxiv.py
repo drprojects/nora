@@ -1,8 +1,8 @@
 import re
 import sys
 import arxiv
-from src.utils.venues import VENUES
-from src.parsers.notion import NotionLibrary
+from nora.utils.venues import VENUES
+from nora.parsers.notion import NotionLibrary
 
 
 __all__ = ['ArxivItem']
@@ -135,7 +135,7 @@ class ArxivItem:
         """Move paper and authors to Notion. Takes a few seconds...
         """
         if verbose:
-            print(f"⬆️  Uploading '{self.title}'...")
+            print(f"⬆️ Uploading '{self.title}'...")
 
         # First, create the paper and its properties
         response = NotionLibrary(cfg).create_paper(

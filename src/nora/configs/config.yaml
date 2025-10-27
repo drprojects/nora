@@ -1,0 +1,44 @@
+verbose: True
+
+notion:
+    # Adapt to your own Notion library.
+    # See https://developers.notion.com/docs/create-a-notion-integration
+    token: ???
+    papers_db_id: ???
+    people_db_id: ???
+    affiliations_db_id: ???
+    venues_db_id: ???
+    topics_db_id: ???
+
+    # If you happen to modify your field names in Notion, update the
+    # following database-specific keys
+    person_keys:
+        name: 'Name'
+        affiliations: '🏢 Affiliations'
+        papers: '📜 Papers'
+        website: 'Website'
+
+    paper_keys:
+        name: 'Name'
+        authors: '👤 Authors'
+        abstract:  'Abstract'
+        topics: '🧲 Key topics'
+        url: 'URL'
+        to_read: 'Reading status'
+        year: 'Year'
+        venue:  '🤹 Venue'
+
+    affiliation_keys:
+        name: 'Name'
+
+    venue_keys:
+        name: 'Name'
+
+    # Not supposed to be edited
+    max_text_length: 2000
+
+zotero:
+    # Adapt to your own Zotero library
+    library_id: ???
+    api_token: ???
+    ignored_collections: []

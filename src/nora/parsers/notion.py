@@ -1,7 +1,7 @@
 import requests
 import mistletoe
 from notional.parser import HtmlParser
-from src.utils.env import sanity_check_config
+from nora.utils.keys import sanity_check_config
 
 
 __all__ = ['NotionLibrary']
@@ -28,8 +28,8 @@ class NotionLibrary:
             'affiliations_db_id',
             'venues_db_id',
             'topics_db_id']
-        env_variables = [f"notion_{k}" for k in keys]
-        sanity_check_config(cfg, keys, env_variables)
+        private_keys = [f"notion_{k}" for k in keys]
+        sanity_check_config(cfg, keys, private_keys)
 
         self.cfg = cfg
         self.headers = {

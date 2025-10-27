@@ -88,6 +88,9 @@ def start_server(patience=10, timestep=0.25):
     # Kill any stale process bound to port before launching new
     kill_pid_using_port(SERVER_PORT)
 
+    # Check that the node version is at most 20
+    check_node_version()
+
     server_path = os.path.join(dirname(dirname(__file__)), 'translation_server')
     _translation_process = subprocess.Popen(
         ['node', 'src/server.js'],
@@ -206,7 +209,7 @@ def json_to_python(data):
 
 def translate_from_url(url, timeout=20):
     start_server()
-    print(f"ℹ️  Retrieving metadata for URL: {url} ...")
+    print(f"ℹ️ Retrieving metadata for URL: {url} ...")
     try:
         out = subprocess.check_output([
             'curl', '-s', '-S', '-d', url, '-m', f'{timeout}', '-H', "Content-Type: text/plain", f"{SERVER_IP}/web"
@@ -228,3 +231,10 @@ def translate_from_identifier(identifier, timeout=20):
         print("❌ Failed to contact the translation server. Please check your internet connection or try again.")
         sys.exit(1)
     return json_to_python(out)
+
+
+def check_node_version():
+    output = subprocess.check_output(["node", "-v"]).decode().strip()
+    major = int(output.replace('v', '').split(".")[0])
+    if major > 20:
+        print(f"⚠️ Detected npm {major}. Please use npm 20.x for compatibility.")

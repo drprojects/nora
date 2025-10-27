@@ -1,7 +1,7 @@
 import os
 import signal
 import subprocess
-from src.utils.translation_server import get_pid_using_port
+from nora.utils.translation_server import get_pid_using_port
 
 
 TRANSLATION_SERVER_PORT = 1969

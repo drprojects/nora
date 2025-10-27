@@ -1,11 +1,11 @@
 import datetime
 from pyzotero import zotero
-from src.utils.venues import VENUES
-from src.parsers.arxiv import ArxivItem
-from src.parsers.notion import NotionLibrary
-from src.utils.translation_server import *
-from src.utils.zotero import *
-from src.utils.env import sanity_check_config
+from nora.utils.venues import VENUES
+from nora.parsers.arxiv import ArxivItem
+from nora.parsers.notion import NotionLibrary
+from nora.utils.translation_server import *
+from nora.utils.zotero import *
+from nora.utils.keys import sanity_check_config
 
 
 __all__ = ['ZoteroLibrary', 'ZoteroItem']
@@ -15,8 +15,8 @@ class ZoteroLibrary:
 
     def __init__(self, cfg, verbose=False):
         keys = ['library_id', 'api_token']
-        env_variables = [f"zotero_{k}" for k in keys]
-        sanity_check_config(cfg, keys, env_variables)
+        private_keys = [f"zotero_{k}" for k in keys]
+        sanity_check_config(cfg, keys, private_keys)
 
         self.cfg = cfg
         self.verbose = verbose
@@ -295,7 +295,7 @@ class ZoteroItem:
         """Move paper and authors to Notion. Takes a few seconds...
         """
         if verbose:
-            print(f"⬆️  Uploading '{self.title}'...")
+            print(f"⬆️ Uploading '{self.title}'...")
 
         # First, create the paper and its properties
         response = NotionLibrary(cfg).create_paper(

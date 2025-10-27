@@ -1,0 +1,35 @@
+[project]
+name = "nora"
+version = "2.0.0"
+description = "NoRA Tools for scientific reading with Notion"
+authors = [{ name = "Damien Robert", email = "damien.robert@uzh.ch" }]
+requires-python = ">=3.9"
+dependencies = [
+    "psutil",
+    "omegaconf",
+    "click",
+    "requests",
+    "arxiv",
+    "notion-client",
+    "notional",
+    "pyrootutils",
+    "pyzotero",
+    "mistletoe",
+]
+
+[project.scripts]
+nora = "nora.utils.cli:cli"
+
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"nora" = [
+    "configs/**/*.yaml",
+    "translation_server/**",
+    "translation_server/**/*"
+]

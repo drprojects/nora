@@ -1,3 +1,0 @@
-# Adapt to your local proxy if need be
-http_proxy: ${oc.env:HTTP_PROXY, ''}
-https_proxy: ${oc.env:HTTPS_PROXY, ''}

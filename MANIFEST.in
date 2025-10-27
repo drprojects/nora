@@ -1,0 +1,8 @@
+# Include all YAML config files
+recursive-include src/nora/configs *.yaml
+
+# Include translation_server directory and all its contents
+recursive-include src/nora/translation_server *
+
+# Include any package data defined in setup.py / pyproject.toml
+include src/nora/__init__.py
