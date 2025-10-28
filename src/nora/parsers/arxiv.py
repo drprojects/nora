@@ -1,7 +1,9 @@
 import re
 import sys
 import arxiv
-from nora.utils.venues import VENUES
+from omegaconf import OmegaConf
+
+from nora.utils.venues import parse_venue
 from nora.parsers.notion import NotionLibrary
 
 
@@ -18,7 +20,12 @@ CLIENT = arxiv.Client(page_size=100, delay_seconds=3, num_retries=3)
 
 class ArxivItem:
 
-    def __init__(self, arxiv_id=None, title=None, max_results=10):
+    def __init__(
+            self,
+            arxiv_id: str=None,
+            title: str=None,
+            max_results: int=10,
+            cfg_venues: OmegaConf=None):
         """Object to query a paper from arxiv.
 
         :param arxiv_id: str
@@ -31,6 +38,8 @@ class ArxivItem:
         """
         assert arxiv_id is not None or title is not None, \
             "Please provide an arxiv identifier or a paper title"
+
+        self.cfg_venues = cfg_venues
 
         if arxiv_id is not None:
             arxiv_id = str(arxiv_id)
@@ -102,16 +111,14 @@ class ArxivItem:
     @property
     def venue(self):
         # Search venue in 'journal_ref'
-        if self._item.journal_ref is not None:
-            for key, venue in VENUES.items():
-                if key in self._item.journal_ref.lower():
-                    return venue
+        venue = parse_venue(self._item.journal_ref, self.cfg_venues)
+        if venue is not None:
+            return venue
 
         # Search venue in 'comment'
-        if self.notes is not None:
-            for key, venue in VENUES.items():
-                if key in self.notes.lower():
-                    return venue
+        venue = parse_venue(self.notes, self.cfg_venues)
+        if venue is not None:
+            return venue
 
         return self._item.journal_ref
 
@@ -131,7 +138,7 @@ class ArxivItem:
     def doi(self):
         return self._item.doi
 
-    def to_notion(self, cfg, verbose=True):
+    def to_notion(self, cfg: OmegaConf, verbose: bool=True):
         """Move paper and authors to Notion. Takes a few seconds...
         """
         if verbose:

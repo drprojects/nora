@@ -5,7 +5,7 @@ from pathlib import Path
 from omegaconf import OmegaConf
 
 
-def load_yaml(path):
+def load_yaml(path: str):
     if not os.path.exists(path):
         return {}
     with open(path, "r") as f:
@@ -71,7 +71,7 @@ def configure_private_config():
     print(f"✅ Configuration saved to {config_path}")
 
 
-def load_private_config(depth=0):
+def load_private_config(depth: int=0):
     """Load private keys from ~/.nora/config.yaml"""
     config_path = get_private_config_path()
     if config_path.exists():

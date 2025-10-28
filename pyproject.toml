@@ -15,6 +15,7 @@ dependencies = [
     "pyrootutils",
     "pyzotero",
     "mistletoe",
+    "rapidfuzz",
 ]
 
 [project.scripts]

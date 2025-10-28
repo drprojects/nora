@@ -1,6 +1,9 @@
 import requests
 import mistletoe
 from notional.parser import HtmlParser
+from omegaconf import OmegaConf
+from typing import List, Dict
+
 from nora.utils.keys import sanity_check_config
 
 
@@ -20,7 +23,7 @@ class NotionLibrary:
 
     # TODO: automatically generate bibtex from notion (maybe parse arxiv first)
 
-    def __init__(self, cfg):
+    def __init__(self, cfg: OmegaConf):
         keys = [
             'token',
             'papers_db_id',
@@ -45,8 +48,11 @@ class NotionLibrary:
         if response.text['object'] != 'error':
             return response.json()
 
-    def _get_pages(self,
-            database_id: str, num: int=None, name_equals: str=None,
+    def _get_pages(
+            self,
+            database_id: str,
+            num: int=None,
+            name_equals: str=None,
             name_contains: str=None):
         """Get pages from your Notion database.
 
@@ -120,7 +126,12 @@ class NotionLibrary:
         response = requests.post(url, headers=self.headers, json=payload)
         return response
 
-    def create_person(self, name, papers=[], affiliations=[], website=None):
+    def create_person(
+            self,
+            name: str,
+            papers: List[str]=[],
+            affiliations: List[str]=[],
+            website: str=None):
         # Skip if person already exists in the database
         name = name[:self.cfg.max_text_length]
         if len(self.get_people(name_equals=name)) > 0:
@@ -161,8 +172,15 @@ class NotionLibrary:
         return self._create_page(self.cfg.people_db_id, data)
 
     def create_paper(
-            self, name, authors=[], topics=[], to_read=True, abstract=None,
-            url=None, year=None, venue=None):
+            self,
+            name: str,
+            authors: List[str]=[],
+            topics: List[str]=[],
+            to_read: bool=True,
+            abstract: str=None,
+            url: str=None,
+            year: str=None,
+            venue: str=None):
 
         # Skip if paper already exists in the database
         name = name[:self.cfg.max_text_length]
@@ -232,7 +250,7 @@ class NotionLibrary:
 
         return self._create_page(self.cfg.papers_db_id, data)
 
-    def create_affiliation(self, name):
+    def create_affiliation(self, name: str):
         # Skip if affiliation already exists in the database
         name = name[:self.cfg.max_text_length]
         if len(self.get_affiliations(name_equals=name)) > 0:
@@ -246,7 +264,7 @@ class NotionLibrary:
 
         return self._create_page(self.cfg.affiliations_db_id, data)
 
-    def create_venue(self, name):
+    def create_venue(self, name: str):
         # Skip if venue already exists in the database
         name = name[:self.cfg.max_text_length]
         if len(self.get_venues(name_equals=name)) > 0:
@@ -260,7 +278,7 @@ class NotionLibrary:
 
         return self._create_page(self.cfg.venues_db_id, data)
 
-    def create_topic(self, name):
+    def create_topic(self, name: str):
         # Skip if venue already exists in the database
         name = name[:self.cfg.max_text_length]
         if len(self.get_topics(name_equals=name)) > 0:
@@ -299,7 +317,11 @@ class NotionLibrary:
         response = requests.patch(url, json=payload, headers=self.headers)
         return response
 
-    def _flatten_block(self, block, marker='•', depth=1):
+    def _flatten_block(
+            self,
+            block: Dict,
+            marker: str='•',
+            depth: int=1):
         text = ' '.join(
             [x['text']['content'] for x in block[block['type']]['rich_text']])
 
@@ -317,7 +339,11 @@ class NotionLibrary:
 
         return text
 
-    def _flatten_children(self, block, marker='•', depth=1):
+    def _flatten_children(
+            self,
+            block: Dict,
+            marker: str='•',
+            depth: int=1):
         if not block['has_children']:
             return block
 
@@ -338,7 +364,11 @@ class NotionLibrary:
         return block
 
     def _flatten_max_depth_children(
-            self, blocks, depth=0, max_depth=2, marker='•'):
+            self,
+            blocks: List[Dict],
+            depth: int=0,
+            max_depth: int=2,
+            marker: str='•'):
         for i, block in enumerate(blocks):
             if not block['has_children']:
                 continue

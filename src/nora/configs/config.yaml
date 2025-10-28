@@ -1,7 +1,6 @@
 verbose: True
 
 notion:
-    # Adapt to your own Notion library.
     # See https://developers.notion.com/docs/create-a-notion-integration
     token: ???
     papers_db_id: ???
@@ -21,12 +20,12 @@ notion:
     paper_keys:
         name: 'Name'
         authors: '👤 Authors'
-        abstract:  'Abstract'
+        abstract: 'Abstract'
         topics: '🧲 Key topics'
         url: 'URL'
         to_read: 'Reading status'
         year: 'Year'
-        venue:  '🤹 Venue'
+        venue: '🤹 Venue'
 
     affiliation_keys:
         name: 'Name'
@@ -38,7 +37,27 @@ notion:
     max_text_length: 2000
 
 zotero:
-    # Adapt to your own Zotero library
+    # See your Zotero profile settings: https://www.zotero.org/settings/keys
     library_id: ???
     api_token: ???
     ignored_collections: []
+
+# Feel free to adjust the text-acronym matches used to parse venues from
+# the metadata of articles
+venues:
+    'international conference on computer vision': 'ICCV'
+    'computer vision and pattern recognition': 'CVPR'
+    'european conference on computer vision': 'ECCV'
+    'asian conference on computer vision': 'ACCV'
+    'nips': 'NeurIPS'
+    'neural information processing systems': 'NeurIPS'
+    'british machine vision conference': 'BMVC'
+    'international conference on 3d vision': '3DV'
+    'international conference on learning representations': 'ICLR'
+    'international conference on machine learning': 'ICML'
+    'transactions on pattern analysis and machine intelligence': 'TPAMI'
+    'international journal of computer vision': 'IJCV'
+    'computer vision and image understanding': 'CVIU'
+    'transactions on graphics': 'TOG'
+    'international conference on computer graphics and interactive techniques': 'SIGGRAPH'
+    'winter conference on applications of computer vision': 'WACV'

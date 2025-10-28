@@ -1,6 +1,9 @@
 import datetime
 from pyzotero import zotero
-from nora.utils.venues import VENUES
+from omegaconf import OmegaConf
+from typing import List, Dict
+
+from nora.utils.venues import parse_venue
 from nora.parsers.arxiv import ArxivItem
 from nora.parsers.notion import NotionLibrary
 from nora.utils.translation_server import *
@@ -13,12 +16,17 @@ __all__ = ['ZoteroLibrary', 'ZoteroItem']
 
 class ZoteroLibrary:
 
-    def __init__(self, cfg, verbose=False):
+    def __init__(
+            self,
+            cfg: OmegaConf,
+            cfg_venues: OmegaConf=None,
+            verbose: bool=False):
         keys = ['library_id', 'api_token']
         private_keys = [f"zotero_{k}" for k in keys]
         sanity_check_config(cfg, keys, private_keys)
 
         self.cfg = cfg
+        self.cfg_venues = cfg_venues
         self.verbose = verbose
         self.library = None
         self.items = None
@@ -40,7 +48,9 @@ class ZoteroLibrary:
             print("Loading items...")
 
         self.library = zotero.Zotero(
-            self.cfg.library_id, 'user', self.cfg.api_token)
+            self.cfg.library_id,
+            'user',
+            self.cfg.api_token)
 
         self.items = self.library.everything(self.library.top())
 
@@ -96,7 +106,7 @@ class ZoteroLibrary:
         if self.verbose:
             print(f"Found {len(ignored)} duplicate items")
 
-    def to_notion(self, cfg, verbose=True):
+    def to_notion(self, cfg: OmegaConf, verbose: bool=True):
         """Move all papers and authors in the Zotero library to Notion.
         This may take a while...
         """
@@ -108,9 +118,11 @@ class ZoteroLibrary:
     def __len__(self):
         return len(self.items)
 
-    def __getitem__(self, i):
+    def __getitem__(self, i: int):
         return ZoteroItem(
-            self.items[i], library=self.library,
+            self.items[i],
+            cfg_venues=self.cfg_venues,
+            library=self.library,
             ignored_collections=self.cfg.ignored_collections)
 
     def __iter__(self):
@@ -123,8 +135,14 @@ class ZoteroLibrary:
 
 class ZoteroItem:
 
-    def __init__(self, item, library=None, ignored_collections=None):
+    def __init__(
+            self,
+            item: Dict,
+            cfg_venues: OmegaConf = None,
+            library: zotero.Zotero=None,
+            ignored_collections: List[str]=None):
         self.item = item
+        self.cfg_venues = cfg_venues
         self.library = library
 
         self.notes = self.get_notes()
@@ -132,14 +150,14 @@ class ZoteroItem:
         self.venue = self.get_venue()
 
     @classmethod
-    def from_url(cls, url, **kwargs):
+    def from_url(cls, url: str, **kwargs):
         """Retrieve metadata for a webpage. This mimics the behavior of
         the Zotero plugin for adding pages from the browser.
         """
-        return cls(translate_from_url(url, **kwargs))
+        return cls(translate_from_url(url), **kwargs)
 
     @classmethod
-    def from_identifier(cls, identifier, **kwargs):
+    def from_identifier(cls, identifier: str, **kwargs):
         """Retrieve metadata from an identifier (DOI, ISBN, PMID, arXiv
         ID). Note that for some of these identifiers, the parsed
         libraries may not provide as extensive metadata as when parsing
@@ -147,7 +165,7 @@ class ZoteroItem:
         the case when using the DOI: the crossref database will be used,
         which usually does not provide paper abstracts.
         """
-        return cls(translate_from_identifier(identifier, **kwargs))
+        return cls(translate_from_identifier(identifier), **kwargs)
 
     @property
     def key(self):
@@ -242,7 +260,7 @@ class ZoteroItem:
 
         return notes
 
-    def get_tags(self, ignored_collections=None):
+    def get_tags(self, ignored_collections: List[str]=None):
         """This is HACKY and specific to my needs: I do not use the
         Zotero tags but the collections instead. Besides, I exclude some
         collection names which are not useful to me.
@@ -257,7 +275,7 @@ class ZoteroItem:
             tags = [t for t in tags if t not in ignored_collections]
         return tags
 
-    def get_collection_ancestors(self, key):
+    def get_collection_ancestors(self, key: str):
         names = []
         if self.library is None:
             return names
@@ -276,22 +294,22 @@ class ZoteroItem:
                 continue
             text = self.item['data'][field]
             fallback_text = text if not fallback_text else fallback_text
-            for key, venue in VENUES.items():
-                if key in text.lower():
-                    return venue
+            venue = parse_venue(text, self.cfg_venues)
+            if venue is not None:
+                return venue
 
         # Search in the notes
-        for key, venue in VENUES.items():
-            if key in self.notes.lower():
-                return venue
+        venue = parse_venue(self.notes, self.cfg_venues)
+        if venue is not None:
+            return venue
 
         # Search venue on arXiv
         if self.arxiv is not None and self.arxiv != '':
-            return ArxivItem(self.arxiv).venue
+            return ArxivItem(self.arxiv, cfg_venues=self.cfg_venues).venue
 
         return fallback_text
 
-    def to_notion(self, cfg, verbose=True):
+    def to_notion(self, cfg: OmegaConf, verbose: bool=True):
         """Move paper and authors to Notion. Takes a few seconds...
         """
         if verbose:

@@ -9,6 +9,7 @@ import socket
 import atexit
 import platform
 from os.path import dirname
+from typing import Union, List, Dict
 
 __all__ = ['translate_from_url', 'translate_from_identifier']
 
@@ -24,7 +25,7 @@ _translation_process = None
 # Utility Functions
 # ------------------------------
 
-def get_pid_using_port_unix(port):
+def get_pid_using_port_unix(port: Union[str, int]):
     """Recover the PID of the process using a given port."""
     for con in psutil.net_connections():
         if con.laddr and con.laddr.port == port:
@@ -34,7 +35,7 @@ def get_pid_using_port_unix(port):
     return -1
 
 
-def get_pid_using_port_osx(port):
+def get_pid_using_port_osx(port: Union[str, int]):
     try:
         out = subprocess.check_output(['lsof', '-ti', f':{port}'])
         pids = [int(p) for p in out.decode().split()]
@@ -43,19 +44,19 @@ def get_pid_using_port_osx(port):
         return -1
 
 
-def get_pid_using_port(port):
+def get_pid_using_port(port: Union[str, int]):
     if platform.system() == "Darwin":
         return get_pid_using_port_osx(port)
     else:
         return get_pid_using_port_unix(port)
 
-def is_port_open(port):
+def is_port_open(port: Union[str, int]):
     """True if something is listening on the port."""
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         return s.connect_ex(("127.0.0.1", port)) == 0
 
 
-def ping_server(timeout=0.5):
+def ping_server(timeout: float=0.5):
     """Return True if the server responds *in any way* to /connector/ping."""
     try:
         out = subprocess.check_output([
@@ -72,7 +73,7 @@ def ping_server(timeout=0.5):
 # Server Lifecycle Management
 # ------------------------------
 
-def start_server(patience=10, timestep=0.25):
+def start_server(patience: float=10, timestep: float=0.25):
     """
     Start the translation server only if not already running.
     Wait until it's *actually responding*, not just bound to port.
@@ -139,7 +140,7 @@ def kill_server():
     _translation_process = None
 
 
-def kill_pid_using_port(port, patience=5, timestep=0.1):
+def kill_pid_using_port(port: Union[str, int], patience: float=5, timestep: float=0.1):
     pid = get_pid_using_port(port)
     if pid is None or pid <= 0:
         return  # nothing to kill
@@ -171,7 +172,7 @@ atexit.register(safe_kill_server)
 # Data & Translation Functions
 # ------------------------------
 
-def json_to_python(data):
+def json_to_python(data: Union[str, List, Dict]):
     """Same conversion helper you had — unchanged."""
     try:
         data = data.decode()
@@ -207,7 +208,7 @@ def json_to_python(data):
     return data
 
 
-def translate_from_url(url, timeout=20):
+def translate_from_url(url: str, timeout: float=20):
     start_server()
     print(f"ℹ️ Retrieving metadata for URL: {url} ...")
     try:
@@ -220,7 +221,7 @@ def translate_from_url(url, timeout=20):
     return json_to_python(out)
 
 
-def translate_from_identifier(identifier, timeout=20):
+def translate_from_identifier(identifier: str, timeout: float=20):
     start_server()
     print(f"ℹ️ Retrieving metadata for identifier: {identifier} ...")
     try:
