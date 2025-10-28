@@ -1,4 +1,5 @@
 import datetime
+
 from pyzotero import zotero
 from omegaconf import OmegaConf
 from typing import List, Dict
@@ -22,8 +23,8 @@ class ZoteroLibrary:
             cfg_venues: OmegaConf=None,
             verbose: bool=False):
         keys = ['library_id', 'api_token']
-        private_keys = [f"zotero_{k}" for k in keys]
-        sanity_check_config(cfg, keys, private_keys)
+        users_keys = [f"zotero_{k}" for k in keys]
+        sanity_check_config(cfg, keys, users_keys)
 
         self.cfg = cfg
         self.cfg_venues = cfg_venues

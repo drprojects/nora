@@ -1,5 +1,5 @@
 import click
-from nora.utils.config import load_config, configure_private_config
+from nora.utils.config import load_config, configure_user_config
 from nora.parsers.zotero import ZoteroLibrary, ZoteroItem
 
 
@@ -15,7 +15,7 @@ def cli():
 @cli.command()
 def configure():
     """Set up your API keys and Notion/Zotero configuration."""
-    configure_private_config()
+    configure_user_config()
 
 
 # -------------------------------------------------------------------------

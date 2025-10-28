@@ -31,8 +31,8 @@ class NotionLibrary:
             'affiliations_db_id',
             'venues_db_id',
             'topics_db_id']
-        private_keys = [f"notion_{k}" for k in keys]
-        sanity_check_config(cfg, keys, private_keys)
+        users_keys = [f"notion_{k}" for k in keys]
+        sanity_check_config(cfg, keys, users_keys)
 
         self.cfg = cfg
         self.headers = {

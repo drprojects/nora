@@ -126,12 +126,32 @@ Open a terminal and run
 pip install git+https://github.com/drprojects/nora.git
 ```
 
+<details>
+<summary><b>👩‍💻 NoRA from source for developers</b></summary>
+
+If you want to extend NoRA-Tools to your need, you can install from source:
+
+```bash
+# Get the source code
+git clone --recurse-submodules https://github.com/drprojects/nora
+
+# Install the python dependencies
+cd nora
+pip install -e .
+
+# Install the node.js server
+cd src/nora/translation_server
+npm install
+cd ../..
+```
+</details>
+
 then configure you API keys
 ```bash
 nora configure
 ```
 this will prompt you to pass your secret keys, which will be saved in 
-`~/.nora/config.yaml`.
+`~/.nora/user.yaml`.
 
 <details>
 <summary><b>
@@ -175,37 +195,21 @@ nora id 2204.07548
 ### Uploading your entire Zotero library to NoRA
 
 ```bash
-nora zotero.upload=True
+nora zotero-upload
 ```
 
-<br>
+### Advanced usage
 
-## 👩‍💻  NoRA for developers
-
-If you want to extend NoRA-Tools to your need, you can install from source:
-
-```bash
-# Get the source code
-git clone --recurse-submodules https://github.com/drprojects/nora
-
-# Install the python dependencies
-cd nora
-pip install -e .
-
-# Install the node.js server
-cd src/nora/translation_server
-npm install
-cd ../..
-```
+You can further customize the behavior of NoRA-Tools by manually editing
+your personal config file located at `~/.nora/user.yaml`.
 
 <details>
-<summary><b>Modifying field names in NoRA?️</b></summary>
+<summary><b>Modifying database names in NoRA️</b></summary>
 
 By default, NoRA-Tools expect the attribute fields (e.g. column names in Notion)
 of your papers, people, etc. to have specific values. If you want to adjust 
-those, you will also need to adjust the
-[configs/config.yaml](src/nora/configs/config.yaml)
-file:
+those, you can do so by overwriting the keys in your personal config file 
+`~/.nora/user.yaml`:
 
 ````yaml
 # If you happen to modify your field names in Notion, update the
@@ -237,48 +241,43 @@ venue_keys:
 
 <details>
 <summary><b>
-Adding your own 🤹 Conferences & journals?</b></summary>
+Parsing of `🤹 Conferences & journals` from metadata</b></summary>
 
 By default, when parsing a paper from a remote database, NoRA-Tools will try to 
-figure out which `🤹 Conferences & journals` to place it under. However, one 
-can hardly account for all possible conference and journal names, nor for all 
-the slight formatting differences used to describe how a paper was published. 
-Yet, we attempt to group the most frequent ones using a predefined `VENUES` 
-dictionary in `src/utils/venues.py`.
+figure out which `🤹 Conferences & journals` to place it under. To this end, 
+the metadata of the searched article will be parsed and matched against a list
+of pre-defined conferences and papers. If a match is found, the corresponding
+acronym will be attached to the paper in NoRA.
 
-If many papers from your library are from a conference or journal absent from 
-this dictionary, and you would like them to be grouped under the same 
-`🤹 Conferences & journals` item, you can simply append your own entries in 
-`VENUES`, using the following format:
+NORA-Tools comes with a predefined set of venue-acronyms matches which can be 
+found in the `venues` parameter of your `~/.nora/user.yaml` like so:
+```yaml
+venues:
+    "text to be matched when searching the conference/journal": 'name used in NoRA'
+```
 
-````python
-lowercase_match_to_search_for_in_remote_metadata: 'shorthand_under_which_to_group'
-````
+When searching for a match, we use the following procedure:
+    1. Exact matches of full-text keys (longer first)
+    2. Exact matches of acronyms (longer first)
+    3. Fuzzy fallback if nothing matches
+    4. None if no sufficiently satisfying match is found 
 
-</details>
-
-<details>
-<summary><b>
-Conflicts with `.netrc`</b></summary>
-
-If you are using a `~/.netrc` file to keep track of your passwords locally, 
-and have declared a `default` account among your configurations, the `requests`
-library will crash when trying to connect to Notion. Please remove your 
-`default` account and all should be fine 😉
+Feel free to edit or extend the `venues` of your  `~/.nora/user.yaml` to suit 
+your need and domain of research.
 
 </details>
 
 <details>
 <summary><b>
-Ignoring Zotero collections when migrating from Zotero to Notion</b></summary>
+Skipping Zotero collections when migrating Zotero library to Notion</b></summary>
 
-By default, the `collections` (e.g. folders) in your Zotero library will be used to 
-populate the `Key Topics` field of your papers in NoRA.
-If you want to exclude some of your collections from this behavior, your can list 
-them in the [configs/zotero/default.yaml](src/nora/configs/zotero/default.yaml) file:
-
+By default, when calling `nora zotero-upload`, the `collections` (i.e. folders) 
+in your Zotero library will be used to populate the `Key Topics` field of 
+your papers in NoRA. If you want to exclude some of your collections from this 
+behavior, your may do so by specifying them in your `~/.nora/user.yaml`:
 ````yaml
-ignored_collections: ['collection name 1', 'collection name 2']
+zotero:
+    ignored_collections: ['collection name 1', 'collection name 2']
 ````
 </details>
 
