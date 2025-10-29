@@ -73,7 +73,7 @@ Simply duplicate the [NoRA template](https://silent-switch-780.notion.site/Templ
 > **Note**: You can freely modify or extend the NoRA template. However, keep in 
 > mind that if you want to use NoRA-Tools after modifying some sensitive page 
 > fields, you may need to adjust your 
-> [Notion configuration](###getting-your-notion-api-keys) accordingly.
+> [Notion configuration](#advanced-usage) accordingly.
 
 ### Getting your Notion API keys
 
